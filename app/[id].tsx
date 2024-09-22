@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, Pressable } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { landmarks } from '../constants/landmarks';
-import { Book, Lightbulb, History } from 'lucide-react-native';
+import { Book, Lightbulb, History, ArrowLeft } from 'lucide-react-native';
 import { calculateDistance } from '../utils/mapUtils';
 import useLocation from '../hooks/useLocation';
 
@@ -10,6 +10,7 @@ export default function LandmarkDetailScreen() {
   const { id } = useLocalSearchParams();
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
   const userLocation = useLocation();
+  const router = useRouter();
 
   const landmark = landmarks.find((l) => l.id.toString() === id);
 
@@ -31,7 +32,19 @@ export default function LandmarkDetailScreen() {
 
   return (
     <ScrollView className="flex-1 bg-gray-900">
-      <Stack.Screen options={{ title: landmark.name, headerShown: true }} />
+      <Stack.Screen 
+        options={{
+          title: landmark.name,
+          headerShown: true,
+          headerStyle: { backgroundColor: '#1F2937' },
+          headerTintColor: '#fff',
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()}>
+              <ArrowLeft color="#fff" size={24} />
+            </Pressable>
+          ),
+        }} 
+      />
       <Image source={{ uri: landmark.image }} className="w-full h-40 object-cover" />
       <View className="p-6">
         <Text className="text-2xl font-bold text-white mb-2">{landmark.name}</Text>
@@ -39,7 +52,7 @@ export default function LandmarkDetailScreen() {
         <Text className="text-gray-300 mb-4">Distance: {distance} km from your location</Text>
 
         <View className="flex-row space-x-2 mb-4">
-          {['History', 'Fun Facts', 'Cultural Insights'].map((info) => (
+          {['history', 'funFacts', 'culturalInsights'].map((info) => (
             <Pressable
               key={info}
               className={`bg-blue-600 p-2 rounded-md ${

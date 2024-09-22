@@ -19,7 +19,7 @@ export const landmarks = [
       id: 3,
       name: "Notre-Dame Cathedral",
       position: { latitude: 48.8530, longitude: 2.3499 },
-      unlocked: false,
+      unlocked: true,
       address: "6 Parvis Notre-Dame - Pl. Jean-Paul II, 75004 Paris, France",
       image: "https://images.unsplash.com/photo-1478391679764-b2d8b3cd1e94?auto=format&fit=crop&w=300&q=80"
     },

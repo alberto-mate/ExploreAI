@@ -9,7 +9,7 @@ export default function Map() {
   const userLocation = useLocation();
 
   return (
-    <View className="h-[60vh]">
+    <View className="h-[40vh]">
       <MapView
         className="w-full h-full"
         initialRegion={{
