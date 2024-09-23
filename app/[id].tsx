@@ -27,7 +27,16 @@ export default function LandmarkDetailScreen() {
 
   const getInfoText = (infoType: string) => {
     // Replace with actual content
-    return "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    switch (infoType) {
+      case 'History':
+        return 'This landmark has a rich history that dates back to the 19th century.';
+      case 'Fun Facts':
+        return 'The landmark is known for its unique architecture and design.';
+      case 'Cultural Insights':
+        return 'The landmark is a symbol of French culture and heritage.';
+      default:
+        return '';
+    }
   };
 
   return (
@@ -52,7 +61,7 @@ export default function LandmarkDetailScreen() {
         <Text className="text-gray-300 mb-4">Distance: {distance} km from your location</Text>
 
         <View className="flex-row space-x-2 mb-4">
-          {['history', 'funFacts', 'culturalInsights'].map((info) => (
+          {['History', 'Fun Facts', 'Cultural Insights'].map((info) => (
             <Pressable
               key={info}
               className={`bg-blue-600 p-2 rounded-md ${

@@ -27,7 +27,7 @@ export default function LandmarkList() {
   );
 
   return (
-    <View className="p-6">
+    <View className="p-6 flex-1">
       <Text className="text-xl font-semibold mb-4 text-gray-300">
         Nearby Landmarks
       </Text>
