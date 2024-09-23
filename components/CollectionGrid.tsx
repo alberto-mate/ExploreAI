@@ -2,12 +2,13 @@ import React from 'react';
 import { View, Image, Text, FlatList, Pressable, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { landmarks } from '../constants/landmarks';
+import { Landmark } from '../types';
 
 export default function CollectionGrid() {
   const unlockedLandmarks = landmarks.filter((l) => l.unlocked);
   const lockedLandmarks = landmarks.filter((l) => !l.unlocked);
 
-  const renderItem = ({ item: landmark }) => (
+  const renderItem = ({ item: landmark }: { item: Landmark }) => (
     <View style={{ width: '48%'}}> 
       <Link href={`/${landmark.id}`} asChild>
         <Pressable className="bg-white/10 rounded-lg p-2 backdrop-blur-md">
