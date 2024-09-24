@@ -1,27 +1,38 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import { landmarks } from '../constants/landmarks';
-import useLocation from '../hooks/useLocation';
-import useReverseGeocode from '../hooks/useReverseGeocode';
-import { MapPin } from 'lucide-react-native';
+import React from "react";
+import { View, Text } from "react-native";
+import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
+import { landmarks } from "../constants/landmarks";
+import useLocation from "../hooks/useLocation";
+import useReverseGeocode from "../hooks/useReverseGeocode";
+import { MapPin } from "lucide-react-native";
 
 export default function Map() {
-  const userLocation = useLocation();
-  const locationName = useReverseGeocode(userLocation?.latitude, userLocation?.longitude);
+  const userLocation = useLocation(500);
+  const locationName = useReverseGeocode(
+    userLocation?.latitude,
+    userLocation?.longitude,
+  );
 
   return (
     <View className="h-[40vh]">
+      <Text className="text-white">{JSON.stringify(userLocation)}</Text>
       <MapView
         className="w-full h-full"
-        initialRegion={ userLocation ? {
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        } : undefined }
-
-        // customMapStyle={/* Add your custom map style here */}
+        showsUserLocation={true}
+        showsMyLocationButton={true}
+        showsCompass={true}
+        showsPointsOfInterest={false}
+        provider={PROVIDER_DEFAULT}
+        initialRegion={
+          userLocation
+            ? {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.1922,
+                longitudeDelta: 0.0421,
+              }
+            : undefined
+        }
       >
         {landmarks.map((landmark) => (
           <Marker
@@ -38,13 +49,14 @@ export default function Map() {
           </Marker>
         )}
       </MapView>
-      <View className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md p-2 rounded-md"> 
-        <Text className='text-white align-center'>
-          {userLocation?.latitude.toFixed(15)}, {userLocation?.longitude.toFixed(15)}
+      <View className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md p-2 rounded-md">
+        <Text className="text-white align-center">
+          {userLocation?.latitude.toFixed(15)},{" "}
+          {userLocation?.longitude.toFixed(15)}
         </Text>
         <Text className="text-white align-center">
           <MapPin color="#fff" className="inline-block mr-1" size={12} />
-          Current Location: {locationName || 'Loading...'}
+          Current Location: {locationName || "Loading..."}
         </Text>
       </View>
     </View>

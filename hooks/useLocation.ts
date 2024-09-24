@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import * as Location from 'expo-location';
+import { useState, useEffect, useRef } from "react";
+import * as Location from "expo-location";
 
-export default function useLocation(cooldownPeriod = 60000) { // 60000 ms = 1 minute
-  const [location, setLocation] = useState<Location.LocationObject['coords'] | null>(null);
+export default function useLocation(cooldownPeriod = 60000) {
+  // 60000 ms = 1 minute
+  const [location, setLocation] = useState<
+    Location.LocationObject["coords"] | null
+  >(null);
   const lastUpdateTime = useRef(0);
 
   useEffect(() => {
@@ -10,8 +13,8 @@ export default function useLocation(cooldownPeriod = 60000) { // 60000 ms = 1 mi
 
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.error('Permission to access location was denied');
+      if (status !== "granted") {
+        console.error("Permission to access location was denied");
         return;
       }
 
@@ -38,7 +41,7 @@ export default function useLocation(cooldownPeriod = 60000) { // 60000 ms = 1 mi
         },
         (newLocation) => {
           updateLocation();
-        }
+        },
       );
 
       return () => {

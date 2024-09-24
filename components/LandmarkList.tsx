@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text, FlatList, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import { landmarks } from '../constants/landmarks';
-import { Award, Lock } from 'lucide-react-native';
-import { Landmark } from '../types';
+import React from "react";
+import { View, Text, FlatList, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { landmarks } from "../constants/landmarks";
+import { Award, Lock } from "lucide-react-native";
+import { Landmark } from "../types";
 
 export default function LandmarkList() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function LandmarkList() {
   const renderItem = ({ item: landmark }: { item: Landmark }) => (
     <Pressable
       className={`p-4 rounded-md ${
-        landmark.unlocked ? 'bg-green-500/20' : 'bg-gray-500/20'
+        landmark.unlocked ? "bg-green-500/20" : "bg-gray-500/20"
       }`}
       onPress={() => router.push(`/${landmark.id}`)}
     >
