@@ -17,7 +17,7 @@ export default function HomeScreen() {
           snapPoints={["20%", "50%", "85%"]}
           index={1}
           backgroundStyle={{
-            backgroundColor: "#1f2937",
+            backgroundColor: "#111827",
           }}
           handleIndicatorStyle={{
             backgroundColor: "#ffffff",
