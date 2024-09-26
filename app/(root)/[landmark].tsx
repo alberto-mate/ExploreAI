@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { landmarks } from "../constants/landmarks";
+import { landmarks } from "../../constants/landmarks";
 import { Book, Lightbulb, History, ArrowLeft } from "lucide-react-native";
-import { calculateDistance } from "../utils/mapUtils";
-import useLocation from "../hooks/useLocation";
+import { calculateDistance } from "../../utils/mapUtils";
+import useLocation from "../../hooks/useLocation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function LandmarkDetailScreen() {
-  const { id } = useLocalSearchParams();
+export default function LandmarkScreen() {
+  const { landmark: landmarkId } = useLocalSearchParams();
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
-  const userLocation = useLocation(500);
+  const userLocation = useLocation(100);
   const router = useRouter();
 
-  const landmark = landmarks.find((l) => l.id.toString() === id);
+  const landmark = landmarks.find((l) => l.id.toString() === landmarkId);
 
   if (!landmark) return null;
 

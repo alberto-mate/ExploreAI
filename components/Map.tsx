@@ -15,7 +15,6 @@ export default function Map() {
 
   return (
     <View className="h-[40vh]">
-      <Text className="text-white">{JSON.stringify(userLocation)}</Text>
       <MapView
         className="w-full h-full"
         showsUserLocation={true}
@@ -50,10 +49,10 @@ export default function Map() {
         )}
       </MapView>
       <View className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md p-2 rounded-md">
-        <Text className="text-white align-center">
+        {/* <Text className="text-white align-center">
           {userLocation?.latitude.toFixed(15)},{" "}
           {userLocation?.longitude.toFixed(15)}
-        </Text>
+        </Text> */}
         <Text className="text-white align-center">
           <MapPin color="#fff" className="inline-block mr-1" size={12} />
           Current Location: {locationName || "Loading..."}

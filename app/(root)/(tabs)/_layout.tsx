@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Stack } from "expo-router";
+import { Tabs } from "expo-router";
 import { Map, Album } from "lucide-react-native";
 
 export default function TabsLayout() {
@@ -12,17 +12,19 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="map"
         options={{
           title: "Map",
           tabBarIcon: ({ color }) => <Map color={color} size={24} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="collection"
+        name="cities"
         options={{
-          title: "Collection",
+          title: "Cities",
           tabBarIcon: ({ color }) => <Album color={color} size={24} />,
+          headerShown: false,
         }}
       />
     </Tabs>
