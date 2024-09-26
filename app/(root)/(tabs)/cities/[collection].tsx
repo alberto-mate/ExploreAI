@@ -3,7 +3,6 @@ import { View, Text, Pressable } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import ProgressBar from "../../../../components/ProgressBar";
 import CollectionGrid from "../../../../components/CollectionGrid";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { cities } from "../../../../constants/cities";
 import { ArrowLeft } from "lucide-react-native";
 
