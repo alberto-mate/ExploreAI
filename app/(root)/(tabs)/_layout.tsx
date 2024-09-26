@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Map, Album } from "lucide-react-native";
+import { Map, Album, PersonStanding } from "lucide-react-native";
 
 export default function TabsLayout() {
   return (
@@ -24,6 +24,14 @@ export default function TabsLayout() {
         options={{
           title: "Cities",
           tabBarIcon: ({ color }) => <Album color={color} size={24} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => <PersonStanding color={color} size={24} />,
           headerShown: false,
         }}
       />
