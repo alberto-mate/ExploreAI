@@ -14,7 +14,7 @@ export default function Map() {
   );
 
   return (
-    <View className="h-[40vh]">
+    <>
       <MapView
         className="w-full h-full"
         showsUserLocation={true}
@@ -58,6 +58,6 @@ export default function Map() {
           Current Location: {locationName || "Loading..."}
         </Text>
       </View>
-    </View>
+    </>
   );
 }
