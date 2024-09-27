@@ -1,10 +1,10 @@
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import "react-native-reanimated";
-import { LogBox } from "react-native";
 
+import "react-native-reanimated";
 import { tokenCache } from "@/utils/auth";
+import { ignoreWarnings } from "@/utils/ignoreWarnings";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
@@ -17,7 +17,7 @@ if (!publishableKey) {
   );
 }
 
-LogBox.ignoreLogs(["Clerk:"]);
+ignoreWarnings();
 
 export default function RootLayout() {
   return (
