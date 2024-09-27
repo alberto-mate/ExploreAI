@@ -1,11 +1,14 @@
 import { useSignIn } from "@clerk/clerk-expo";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
+import { Lock, Mail, ArrowLeft } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
+import { images } from "@/constants/images";
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -39,22 +42,34 @@ const SignIn = () => {
   }, [isLoaded, form]);
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
-        <View className="relative w-full h-[250px]">
-          {/* // TODO: Add the image 
-          <Image source={images.signUpCar} className="z-0 w-full h-[250px]" /> 
-           HOTFIX: Add a view */}
-          <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
-            Welcome 👋
+    <ScrollView className="flex-1 bg-gray-900">
+      <View className="flex-1">
+        <View className="relative w-full h-[200px]">
+          <Image source={images.stars} className="z-0 w-full h-[200px]" />
+          <LinearGradient
+            colors={["transparent", "#111827"]}
+            className="absolute w-full h-[50%] bottom-0 overflow-hidden rounded-b-md"
+          />
+          <Text className="text-2xl text-white font-semibold absolute bottom-2 left-5">
+            Create Your Account
           </Text>
+          <View className="absolute top-12 left-5 flex flex-row justify-start items-center">
+            <Pressable onPress={() => router.back()} className="px-1 pb-1">
+              <ArrowLeft color="white" size={24} className="" />
+            </Pressable>
+            <Image
+              source={images.logo}
+              className="w-[120px] h-[24px]"
+              resizeMode="contain"
+            />
+          </View>
         </View>
 
         <View className="p-5">
           <InputField
             label="Email"
             placeholder="Enter email"
-            //icon={icons.email}
+            icon={<Mail color="#111827" size={20} />}
             textContentType="emailAddress"
             value={form.email}
             onChangeText={(value) => setForm({ ...form, email: value })}
@@ -63,7 +78,7 @@ const SignIn = () => {
           <InputField
             label="Password"
             placeholder="Enter password"
-            //icon={icons.lock}
+            icon={<Lock color="#111827" size={20} />}
             secureTextEntry={true}
             textContentType="password"
             value={form.password}
@@ -80,10 +95,10 @@ const SignIn = () => {
 
           <Link
             href="/sign-up"
-            className="text-lg text-center text-general-200 mt-10"
+            className="text-lg text-center text-general-200 mt-8"
           >
-            <Text>Don't have an account?</Text>
-            <Text className="text-primary-500">Sign Up</Text>
+            <Text className="text-white">Don't have an account?</Text>
+            <Text className="text-blue-500"> Sign Up</Text>
           </Link>
         </View>
       </View>

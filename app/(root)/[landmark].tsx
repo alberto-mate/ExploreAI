@@ -71,7 +71,7 @@ export default function LandmarkScreen() {
           {["History", "Fun Facts", "Cultural Insights"].map((info) => (
             <Pressable
               key={info}
-              className={`bg-blue-600 p-2 rounded-md ${
+              className={`bg-blue-500 p-2 rounded-md ${
                 activeInfo === info ? "bg-blue-700" : ""
               }`}
               onPress={() => setActiveInfo(activeInfo === info ? null : info)}

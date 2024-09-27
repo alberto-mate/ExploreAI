@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Text } from "react-native";
 import { Pressable, PressableProps } from "react-native";
 
@@ -21,14 +22,14 @@ const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
     case "outline":
       return "bg-transparent border-neutral-300 border-[0.5px]";
     default:
-      return "bg-[#0286FF]";
+      return "bg-blue-500";
   }
 };
 
 const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
   switch (variant) {
     case "primary":
-      return "text-black";
+      return "text-white";
     case "secondary":
       return "text-gray-100";
     case "danger":
@@ -53,7 +54,9 @@ const CustomButton = ({
   return (
     <Pressable
       onPress={onPress}
-      className={`w-full rounded-full p-3 flex flex-row justify-center items-center shadow-md shadow-neutral-400/70 ${getBgVariantStyle(bgVariant)} ${className}`}
+      className={`w-full rounded-md p-3 flex flex-row justify-center items-center shadow-md shadow-black-400/70 
+        ${getBgVariantStyle(bgVariant)} active:opacity-80
+        ${className}`}
       {...props}
     >
       {IconLeft && <IconLeft />}

@@ -1,13 +1,17 @@
 import { useSignUp } from "@clerk/clerk-expo";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
+import { User, Lock, Mail, ArrowLeft } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { ReactNativeModal } from "react-native-modal";
 
 import CheckIcon from "@/assets/check.png";
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
+import { images } from "@/constants/images";
+
 // TODO: Add the fetching from the database API
 // import { fetchAPI } from "@/lib/fetch";
 
@@ -86,28 +90,40 @@ const SignUp = () => {
     }
   };
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
-        <View className="relative w-full h-[250px]">
-          {/* TODO: Add a image 
-           <Image source={images.signUpCar} className="z-0 w-full h-[250px]" /> 
-           HOTFIX: Add a view with h-[250px] to fix the height */}
-          <Text className="text-2xl text-black font-semibold absolute bottom-5 left-5">
+    <ScrollView className="flex-1 bg-gray-900">
+      <View className="flex-1">
+        <View className="relative w-full h-[200px]">
+          <Image source={images.stars} className="z-0 w-full h-[200px]" />
+          <LinearGradient
+            colors={["transparent", "#111827"]}
+            className="absolute w-full h-[50%] bottom-0 overflow-hidden rounded-b-md"
+          />
+          <Text className="text-2xl text-white font-semibold absolute bottom-2 left-5">
             Create Your Account
           </Text>
+          <View className="absolute top-12 left-5 flex flex-row justify-start items-center">
+            <Pressable onPress={() => router.back()} className="px-1 pb-1">
+              <ArrowLeft color="white" size={24} className="" />
+            </Pressable>
+            <Image
+              source={images.logo}
+              className="w-[120px] h-[24px]"
+              resizeMode="contain"
+            />
+          </View>
         </View>
         <View className="p-5">
           <InputField
             label="Name"
             placeholder="Enter name"
-            //icon={icons.person}
+            icon={<User color="#111827" size={20} />}
             value={form.name}
             onChangeText={(value) => setForm({ ...form, name: value })}
           />
           <InputField
             label="Email"
             placeholder="Enter email"
-            // icon={icons.email}
+            icon={<Mail color="#111827" size={20} />}
             textContentType="emailAddress"
             value={form.email}
             onChangeText={(value) => setForm({ ...form, email: value })}
@@ -115,7 +131,7 @@ const SignUp = () => {
           <InputField
             label="Password"
             placeholder="Enter password"
-            // icon={icons.lock}
+            icon={<Lock color="#111827" size={20} />}
             secureTextEntry={true}
             textContentType="password"
             value={form.password}
@@ -129,9 +145,9 @@ const SignUp = () => {
           <OAuth />
           <Link
             href="/sign-in"
-            className="text-lg text-center text-general-200 mt-10"
+            className="text-lg text-center text-general-200 mt-8"
           >
-            <Text>Already have an account? </Text>
+            <Text className="text-white">Already have an account? </Text>
             <Text className="text-blue-500">Log In</Text>
           </Link>
         </View>
