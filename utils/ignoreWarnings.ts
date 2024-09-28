@@ -2,7 +2,10 @@ import { LogBox } from "react-native";
 
 export function ignoreWarnings() {
   if (__DEV__) {
-    const IGNORED_LOGS = ["Clerk:"];
+    // const IGNORED_LOGS = ["Clerk:"];
+    const IGNORED_LOGS = [
+      "Clerk: Clerk has been loaded with development keys.",
+    ];
     LogBox.ignoreLogs(IGNORED_LOGS);
     const connectConsoleTextFromArgs = (arrayOfStrings: string[]): string =>
       arrayOfStrings

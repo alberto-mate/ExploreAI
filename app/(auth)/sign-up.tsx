@@ -102,9 +102,9 @@ const SignUp = () => {
             Create Your Account
           </Text>
           <View className="absolute top-12 left-5 flex flex-row justify-start items-center">
-            <Pressable onPress={() => router.back()} className="px-1 pb-1">
+            {/* <Pressable onPress={() => router.back()} className="px-1 pb-1">
               <ArrowLeft color="white" size={24} className="" />
-            </Pressable>
+            </Pressable> */}
             <Image
               source={images.logo}
               className="w-[120px] h-[24px]"
@@ -143,10 +143,7 @@ const SignUp = () => {
             className="mt-6"
           />
           <OAuth />
-          <Link
-            href="/sign-in"
-            className="text-lg text-center text-general-200 mt-8"
-          >
+          <Link href="/sign-in" className="text-center text-general-200 mt-8">
             <Text className="text-white">Already have an account? </Text>
             <Text className="text-blue-500">Log In</Text>
           </Link>
