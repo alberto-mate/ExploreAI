@@ -1,10 +1,11 @@
+import { MapPin } from "lucide-react-native";
 import React from "react";
 import { View, Text } from "react-native";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
+
 import { landmarks } from "../constants/landmarks";
 import useLocation from "../hooks/useLocation";
 import useReverseGeocode from "../hooks/useReverseGeocode";
-import { MapPin } from "lucide-react-native";
 
 export default function Map() {
   const userLocation = useLocation(500);
@@ -48,16 +49,6 @@ export default function Map() {
           </Marker>
         )}
       </MapView>
-      <View className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md p-2 rounded-md">
-        {/* <Text className="text-white align-center">
-          {userLocation?.latitude.toFixed(15)},{" "}
-          {userLocation?.longitude.toFixed(15)}
-        </Text> */}
-        <Text className="text-white align-center">
-          <MapPin color="#fff" className="inline-block mr-1" size={12} />
-          Current Location: {locationName || "Loading..."}
-        </Text>
-      </View>
     </>
   );
 }
