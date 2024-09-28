@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { cities } from "../../../../constants/cities";
-import CityCard from "../../../../components/CityCard";
+
+import CityCard from "@/components/CityCard";
+import { cities } from "@/constants/cities";
 
 export default function CitiesScreen() {
   // TODO: Implement current city from user location

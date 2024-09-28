@@ -1,16 +1,8 @@
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 
 const Profile = () => {

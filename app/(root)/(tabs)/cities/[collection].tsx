@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import ProgressBar from "../../../../components/ProgressBar";
-import CollectionGrid from "../../../../components/CollectionGrid";
-import { cities } from "../../../../constants/cities";
+import ProgressBar from "@/components/ProgressBar";
+import CollectionGrid from "@/components/CollectionGrid";
+import { cities } from "@/constants/cities";
 import { ArrowLeft } from "lucide-react-native";
 
 export default function CollectionScreen() {
