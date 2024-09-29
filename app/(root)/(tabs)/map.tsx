@@ -6,6 +6,7 @@ import { useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CurrentLocation from "@/components/CurrentLocation";
+import { useLocationStore } from "@/store/locationStore";
 
 import LandmarkList from "../../../components/LandmarkList";
 import Map from "../../../components/Map";
@@ -17,7 +18,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const locationName = "San Francisco";
+  const { userAddress } = useLocationStore();
 
   // Animated values
   const animatedBottomSheetIndex = useSharedValue(0);
@@ -41,7 +42,7 @@ export default function HomeScreen() {
       <GestureHandlerRootView>
         <Map />
         <CurrentLocation
-          locationName={locationName}
+          locationName={userAddress}
           animatedIndex={currentLocationAnimatedIndex}
           animatedPosition={currentLocationAnimatedPosition}
         />

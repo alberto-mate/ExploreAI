@@ -1,59 +1,31 @@
-import { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
+import { useEffect } from "react";
 
-export default function useLocation(cooldownPeriod = 60000) {
-  // 60000 ms = 1 minute
-  const [location, setLocation] = useState<
-    Location.LocationObject["coords"] | null
-  >(null);
-  const lastUpdateTime = useRef(0);
+import { useLocationStore } from "@/store/locationStore";
+
+export default function useLocation() {
+  const { setUserLocation } = useLocationStore();
 
   useEffect(() => {
-    let isMounted = true;
-
-    const getLocation = async () => {
+    (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        console.error("Permission to access location was denied");
+        console.log("Permission to access location was denied");
         return;
       }
 
-      const updateLocation = async () => {
-        const currentTime = Date.now();
-        if (currentTime - lastUpdateTime.current >= cooldownPeriod) {
-          let newLocation = await Location.getCurrentPositionAsync({});
-          if (isMounted) {
-            setLocation(newLocation.coords);
-            lastUpdateTime.current = currentTime;
-          }
-        }
-      };
+      let location = await Location.getCurrentPositionAsync({});
 
-      // Initial location update
-      updateLocation();
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+      });
 
-      // Set up a listener for location changes
-      const locationSubscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.Balanced,
-          timeInterval: cooldownPeriod,
-          distanceInterval: 10, // Update if device moves by 10 meters
-        },
-        (newLocation) => {
-          updateLocation();
-        },
-      );
-
-      return () => {
-        isMounted = false;
-        if (locationSubscription) {
-          locationSubscription.remove();
-        }
-      };
-    };
-
-    getLocation();
-  }, [cooldownPeriod]);
-
-  return location;
+      setUserLocation({
+        latitude: location.coords?.latitude,
+        longitude: location.coords?.longitude,
+        address: `${address[0].city}, ${address[0].country}`,
+      });
+    })();
+  }, []);
 }

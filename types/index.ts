@@ -19,3 +19,16 @@ export interface CityProps {
   };
   image: string;
 }
+
+export interface LocationProps {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
+export interface LocationStoreProps {
+  userLatitude: number | null;
+  userLongitude: number | null;
+  userAddress: string | null;
+  setUserLocation: (location: LocationProps) => void;
+}

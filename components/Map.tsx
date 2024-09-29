@@ -1,18 +1,16 @@
 import { MapPin } from "lucide-react-native";
 import React from "react";
-import { View, Text } from "react-native";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
+
+import { useLocationStore } from "@/store/locationStore";
 
 import { landmarks } from "../constants/landmarks";
 import useLocation from "../hooks/useLocation";
-import useReverseGeocode from "../hooks/useReverseGeocode";
 
 export default function Map() {
-  const userLocation = useLocation(500);
-  const locationName = useReverseGeocode(
-    userLocation?.latitude,
-    userLocation?.longitude,
-  );
+  useLocation();
+
+  const { userLatitude, userLongitude, userAddress } = useLocationStore();
 
   return (
     <>
@@ -24,10 +22,10 @@ export default function Map() {
         showsPointsOfInterest={false}
         provider={PROVIDER_DEFAULT}
         initialRegion={
-          userLocation
+          userLatitude && userLongitude
             ? {
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
+                latitude: userLatitude,
+                longitude: userLongitude,
                 latitudeDelta: 0.1922,
                 longitudeDelta: 0.0421,
               }
@@ -43,9 +41,12 @@ export default function Map() {
             <MapPin color={landmark.unlocked ? "#22c55e" : "#6b7280"} />
           </Marker>
         ))}
-        {userLocation && (
-          <Marker coordinate={userLocation}>
-            <MapPin color="#ef4444" />
+        {userLatitude && userLongitude && userAddress && (
+          <Marker
+            coordinate={{ latitude: userLatitude, longitude: userLongitude }}
+            title={userAddress}
+          >
+            <MapPin color="#3b82f6" />
           </Marker>
         )}
       </MapView>

@@ -1,29 +1,32 @@
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
-import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+
+import { useLocationStore } from "@/store/locationStore";
+
 import { landmarks } from "../../constants/landmarks";
-import { ArrowLeft } from "lucide-react-native";
 import { calculateDistance } from "../../utils/mapUtils";
-import useLocation from "../../hooks/useLocation";
 
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
-  const userLocation = useLocation(100);
+  const { userLatitude, userLongitude } = useLocationStore();
   const router = useRouter();
 
   const landmark = landmarks.find((l) => l.id.toString() === landmarkId);
 
   if (!landmark) return null;
 
-  const distance = userLocation
-    ? calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        landmark.position.latitude,
-        landmark.position.longitude,
-      )
-    : "Unknown";
+  const distance =
+    userLatitude && userLongitude
+      ? calculateDistance(
+          userLatitude,
+          userLongitude,
+          landmark.position.latitude,
+          landmark.position.longitude,
+        )
+      : "Unknown";
 
   const getInfoText = (infoType: string) => {
     // Replace with actual content

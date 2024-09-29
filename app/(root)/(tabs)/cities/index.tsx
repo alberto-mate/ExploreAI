@@ -4,10 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import CityCard from "@/components/CityCard";
 import { cities } from "@/constants/cities";
+import { useLocationStore } from "@/store/locationStore";
 
 export default function CitiesScreen() {
   // TODO: Implement current city from user location
-  const currentCity = cities[0];
+  const { userAddress } = useLocationStore();
+  const currentCityName = userAddress?.split(",")[0] || "Unknown";
+
+  const currentCity = cities.find((city) => city.name === currentCityName);
+
   const renderCurrentCity = () => {
     return (
       <>
@@ -22,7 +27,7 @@ export default function CitiesScreen() {
   };
 
   // Explored cities are cities that the user has visited taking out the current city
-  const exploredCities = cities.filter((city) => city.id !== currentCity.id);
+  const exploredCities = cities.filter((city) => city.id !== currentCity?.id);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
@@ -34,7 +39,9 @@ export default function CitiesScreen() {
           )}
           keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className="h-4" />}
-          ListHeaderComponent={renderCurrentCity}
+          ListHeaderComponent={
+            currentCity ? renderCurrentCity : <View className="h-4" />
+          }
           showsVerticalScrollIndicator={false}
           ListFooterComponent={() => <View className="h-16" />}
         />
