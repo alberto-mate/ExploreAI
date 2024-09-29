@@ -61,7 +61,7 @@ export default function CurrentLocation({
     <Animated.View
       onLayout={handleOnLayout}
       style={containerStyle}
-      className="bg-gray-900 rounded-md p-2"
+      className="bg-gray-900/50 rounded-md p-2"
     >
       <Text className="text-white align-center">
         <MapPin color="#fff" className="inline-block mr-1" size={12} />

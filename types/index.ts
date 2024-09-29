@@ -1,4 +1,4 @@
-export interface Landmark {
+export interface LandmarkProps {
   id: number;
   name: string;
   position: {
