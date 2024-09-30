@@ -1,8 +1,7 @@
 import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 
-// TODO: Implement fetch
-// import { fetchAPI } from "@/lib/fetch";
+import { fetchAPI } from "@/utils/fetch";
 
 export const tokenCache = {
   async getToken(key: string) {
@@ -40,18 +39,16 @@ export const googleOAuth = async (startOAuthFlow: any) => {
       if (setActive) {
         await setActive({ session: createdSessionId });
         {
-          /* TODO: Implement fetch
-        if (signUp.createdUserId) {
-          await fetchAPI("/(api)/user", {
-            method: "POST",
-            body: JSON.stringify({
-              name: `${signUp.firstName} ${signUp.lastName}`,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            }),
-          });
-        }
-        */
+          if (signUp.createdUserId) {
+            await fetchAPI("/(api)/user", {
+              method: "POST",
+              body: JSON.stringify({
+                name: `${signUp.firstName} ${signUp.lastName}`,
+                email: signUp.emailAddress,
+                clerkId: signUp.createdUserId,
+              }),
+            });
+          }
         }
 
         return {

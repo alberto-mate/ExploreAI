@@ -1,7 +1,7 @@
 import { useSignUp } from "@clerk/clerk-expo";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
-import { User, Lock, Mail, ArrowLeft } from "lucide-react-native";
+import { User, Lock, Mail } from "lucide-react-native";
 import { useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { ReactNativeModal } from "react-native-modal";
@@ -11,6 +11,7 @@ import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
 import { images } from "@/constants/images";
+import { fetchAPI } from "@/utils/fetch";
 
 // TODO: Add the fetching from the database API
 // import { fetchAPI } from "@/lib/fetch";
@@ -57,7 +58,6 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
-        /* TODO: Add the fetching from the database API
         await fetchAPI("/(api)/user", {
           method: "POST",
           body: JSON.stringify({
@@ -65,7 +65,7 @@ const SignUp = () => {
             email: form.email,
             clerkId: completeSignUp.createdUserId,
           }),
-        }); */
+        });
 
         await setActive({ session: completeSignUp.createdSessionId });
         setVerification({

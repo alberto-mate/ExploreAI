@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/clerk-expo": "^2.2.16",
     "@gorhom/bottom-sheet": "^4.6.4",
+    "@neondatabase/serverless": "^0.9.5",
     "@react-navigation/native": "^6.1.18",
     "expo": "~51.0.28",
     "expo-linear-gradient": "~13.0.2",
