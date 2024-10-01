@@ -1,24 +1,28 @@
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import ProgressBar from "@/components/ProgressBar";
+
 import CollectionGrid from "@/components/CollectionGrid";
-import { cities } from "@/constants/cities";
-import { ArrowLeft } from "lucide-react-native";
+import ProgressBar from "@/components/ProgressBar";
+import { CityProps } from "@/types";
+import { useFetch } from "@/utils/fetch";
+// import { cities } from "@/constants/cities";
 
 export default function CollectionScreen() {
   const { collection: cityId } = useLocalSearchParams();
   const router = useRouter();
 
-  const city = cities.find((c) => c.id.toString() === cityId);
+  const { data: cities } = useFetch<CityProps[]>("/(api)/cities");
+  if (!cities) return null;
 
-  if (!city) return null;
+  const city = cities.find((c) => c.id.toString() === cityId);
 
   return (
     <View className="flex-1 bg-gray-900">
       <Stack.Screen
         options={{
-          title: city.name,
+          title: city?.name || "Collection",
           headerShown: true,
           headerStyle: { backgroundColor: "#1F2937" },
           headerTintColor: "#fff",
@@ -35,7 +39,7 @@ export default function CollectionScreen() {
         </Text>
         <ProgressBar progress={33} />
         <Text className="text-center text-lg font-medium mb-6 text-white">
-          33% Complete - {city.name} Collection
+          33% Complete - {city?.name || "Collection"} Collection
         </Text>
         <CollectionGrid />
       </View>

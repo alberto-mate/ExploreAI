@@ -1,15 +1,39 @@
 import { Link } from "expo-router";
+import { useEffect } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CityCard from "@/components/CityCard";
-import { cities } from "@/constants/cities";
 import { useLocationStore } from "@/store/locationStore";
+import { CityProps } from "@/types";
+import { useFetch } from "@/utils/fetch";
 
 export default function CitiesScreen() {
-  // TODO: Implement current city from user location
   const { userAddress } = useLocationStore();
   const currentCityName = userAddress?.split(",")[0] || "Unknown";
+
+  // Fetch cities from DB
+  const {
+    data: cities,
+    loading,
+    error,
+  } = useFetch<CityProps[]>("/(api)/cities");
+
+  if (loading)
+    return (
+      <View className="flex justify-between items-center w-full">
+        <ActivityIndicator size="small" color="#fff" />
+      </View>
+    );
+
+  if (error || !cities) {
+    return (
+      <View className="flex justify-between items-center w-full">
+        <Text className="text-red-500">Error: {error}</Text>
+      </View>
+    );
+  }
 
   const currentCity = cities.find((city) => city.name === currentCityName);
 
