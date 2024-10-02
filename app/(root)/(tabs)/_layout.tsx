@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
-import { View } from "react-native";
 import { Map, Album, PersonStanding, LucideProps } from "lucide-react-native";
+import { View } from "react-native";
 
 const TabIcon = ({
   IconComponent,

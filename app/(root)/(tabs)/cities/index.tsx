@@ -1,41 +1,44 @@
-import { Link } from "expo-router";
-import { useEffect } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { FlatList, Text, View } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CityCard from "@/components/CityCard";
 import { useLocationStore } from "@/store/locationStore";
 import { CityProps } from "@/types";
-import { useFetch } from "@/utils/fetch";
+import { fetchAPI } from "@/utils/fetch";
 
 export default function CitiesScreen() {
   const { userAddress } = useLocationStore();
   const currentCityName = userAddress?.split(",")[0] || "Unknown";
 
-  // Fetch cities from DB
   const {
     data: cities,
-    loading,
+    isLoading,
     error,
-  } = useFetch<CityProps[]>("/(api)/cities");
+  } = useQuery<CityProps[]>(["cities"], () =>
+    fetchAPI("/(api)/cities").then((response) => response.data),
+  );
 
-  if (loading)
+  if (isLoading)
     return (
-      <View className="flex justify-between items-center w-full">
+      <SafeAreaView className="flex-1 bg-gray-900 justify-center items-center">
         <ActivityIndicator size="small" color="#fff" />
-      </View>
+      </SafeAreaView>
     );
 
   if (error || !cities) {
     return (
       <View className="flex justify-between items-center w-full">
-        <Text className="text-red-500">Error: {error}</Text>
+        <Text className="text-red-500">Error: {String(error)}</Text>
       </View>
     );
   }
 
   const currentCity = cities.find((city) => city.name === currentCityName);
+
+  // Explored cities are cities that the user has visited taking out the current city
+  const exploredCities = cities.filter((city) => city.id !== currentCity?.id);
 
   const renderCurrentCity = () => {
     return (
@@ -50,9 +53,6 @@ export default function CitiesScreen() {
     );
   };
 
-  // Explored cities are cities that the user has visited taking out the current city
-  const exploredCities = cities.filter((city) => city.id !== currentCity?.id);
-
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
       <View className="p-6">
@@ -63,9 +63,7 @@ export default function CitiesScreen() {
           )}
           keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className="h-4" />}
-          ListHeaderComponent={
-            currentCity ? renderCurrentCity : <View className="h-4" />
-          }
+          ListHeaderComponent={renderCurrentCity()}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={() => <View className="h-16" />}
         />

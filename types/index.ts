@@ -1,3 +1,9 @@
+export interface UserProps {
+  name: string;
+  email: string;
+  clerkId: string | null;
+}
+
 export interface LandmarkProps {
   id: number;
   name: string;

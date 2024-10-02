@@ -1,4 +1,5 @@
 import { useSignUp } from "@clerk/clerk-expo";
+import { useMutation } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { User, Lock, Mail } from "lucide-react-native";
@@ -11,14 +12,17 @@ import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
 import { images } from "@/constants/images";
+import { UserProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
-
-// TODO: Add the fetching from the database API
-// import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const mutationUser = useMutation({
+    mutationFn: (data: UserProps) =>
+      fetchAPI("/(api)/user", { method: "POST", body: JSON.stringify(data) }),
+  });
 
   const [form, setForm] = useState({
     name: "",
@@ -58,13 +62,10 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
-        await fetchAPI("/(api)/user", {
-          method: "POST",
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            clerkId: completeSignUp.createdUserId,
-          }),
+        mutationUser.mutate({
+          name: form.name,
+          email: form.email,
+          clerkId: completeSignUp.createdUserId,
         });
 
         await setActive({ session: completeSignUp.createdSessionId });

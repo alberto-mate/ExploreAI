@@ -1,20 +1,23 @@
-import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { ImageBackground, Pressable, Text, View } from "react-native";
-import { CityProps } from "../types";
 import { Link } from "expo-router";
+import React from "react";
+import { ImageBackground, Pressable, Text, View } from "react-native";
+
+import { CityProps } from "../types";
 
 export default function CityCard({
   city,
   isCurrentCity,
 }: {
-  city: CityProps;
+  city: CityProps | undefined;
   isCurrentCity?: boolean;
 }) {
+  if (!city) return null;
+
   return (
     <Link asChild href={`/cities/${city.id}`}>
       <Pressable
-        className={`bg-red-400 rounded-md ${isCurrentCity ? "h-56" : "h-24"}`}
+        className={`bg-gray-900 rounded-md ${isCurrentCity ? "h-56" : "h-24"}`}
       >
         <ImageBackground
           source={{ uri: city.image }}
