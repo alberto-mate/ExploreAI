@@ -1,11 +1,15 @@
+import { useRouter } from "expo-router";
+import { Award, Lock } from "lucide-react-native";
 import React from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { landmarks } from "../constants/landmarks";
-import { Award, Lock } from "lucide-react-native";
+
 import { LandmarkProps } from "../types";
 
-export default function LandmarkList() {
+export default function LandmarkList({
+  landmarks,
+}: {
+  landmarks: LandmarkProps[];
+}) {
   const router = useRouter();
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
@@ -31,12 +35,16 @@ export default function LandmarkList() {
       <Text className="text-xl font-semibold mb-4 text-gray-300">
         Nearby Landmarks
       </Text>
-      <FlatList
-        data={landmarks}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={() => <View className="h-3" />}
-      />
+      {landmarks.length === 0 ? (
+        <Text className="text-gray-500 text-lg">No landmarks found</Text>
+      ) : (
+        <FlatList
+          data={landmarks}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={() => <View className="h-3" />}
+        />
+      )}
     </View>
   );
 }

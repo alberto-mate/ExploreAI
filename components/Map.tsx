@@ -4,12 +4,9 @@ import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 
 import { useLocationStore } from "@/store/locationStore";
 
-import { landmarks } from "../constants/landmarks";
-import useLocation from "../hooks/useLocation";
+import { landmarksGlobal } from "../constants/landmarks";
 
 export default function Map() {
-  useLocation();
-
   const { userLatitude, userLongitude, userAddress } = useLocationStore();
 
   return (
@@ -32,7 +29,7 @@ export default function Map() {
             : undefined
         }
       >
-        {landmarks.map((landmark) => (
+        {landmarksGlobal.map((landmark) => (
           <Marker
             key={landmark.id}
             coordinate={landmark.position}

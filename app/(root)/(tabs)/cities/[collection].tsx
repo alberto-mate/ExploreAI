@@ -38,6 +38,14 @@ export default function CollectionScreen() {
 
   const city = cities.find((c) => c.id.toString() === cityId);
 
+  if (!city) {
+    return (
+      <View className="flex-1 bg-gray-900 justify-center items-center">
+        <Text className="text-white">City not found</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-gray-900">
       <Stack.Screen
@@ -61,7 +69,7 @@ export default function CollectionScreen() {
         <Text className="text-center text-lg font-medium mb-6 text-white">
           33% Complete - {city?.name || "Collection"} Collection
         </Text>
-        <CollectionGrid />
+        <CollectionGrid city={city} />
       </View>
     </View>
   );

@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import React from "react";
 import {
   View,
@@ -7,13 +8,16 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
-import { Link } from "expo-router";
-import { landmarks } from "../constants/landmarks";
-import { LandmarkProps } from "../types";
 
-export default function CollectionGrid() {
-  const unlockedLandmarks = landmarks.filter((l) => l.unlocked);
-  const lockedLandmarks = landmarks.filter((l) => !l.unlocked);
+import { landmarksGlobal } from "@/constants/landmarks";
+import { CityProps, LandmarkProps } from "@/types";
+
+export default function CollectionGrid({ city }: { city: CityProps }) {
+  // Get the landmarks from the city
+  const landmarksCity = landmarksGlobal.filter((l) => l.cityId === city.id);
+
+  const unlockedLandmarksCity = landmarksCity.filter((l) => l.unlocked);
+  const lockedLandmarksCity = landmarksCity.filter((l) => !l.unlocked);
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
     <View style={{ width: "48%" }}>
@@ -39,7 +43,7 @@ export default function CollectionGrid() {
           Unlocked Landmarks
         </Text>
         <FlatList
-          data={unlockedLandmarks}
+          data={unlockedLandmarksCity}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
@@ -53,7 +57,7 @@ export default function CollectionGrid() {
           Locked Landmarks
         </Text>
         <FlatList
-          data={lockedLandmarks}
+          data={lockedLandmarksCity}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}

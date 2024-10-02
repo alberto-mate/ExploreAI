@@ -6,6 +6,7 @@ export interface UserProps {
 
 export interface LandmarkProps {
   id: number;
+  cityId: number;
   name: string;
   position: {
     latitude: number;

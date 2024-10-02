@@ -9,7 +9,7 @@ import Animated, {
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 interface CurrentLocationProps {
-  locationName: string;
+  locationName: string | null;
   animatedPosition: Animated.SharedValue<number>;
   animatedIndex: Animated.SharedValue<number>;
 }

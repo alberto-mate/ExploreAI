@@ -3,10 +3,9 @@ import { ArrowLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
 
+import { landmarksGlobal } from "@/constants/landmarks";
 import { useLocationStore } from "@/store/locationStore";
-
-import { landmarks } from "../../constants/landmarks";
-import { calculateDistance } from "../../utils/mapUtils";
+import { calculateDistance } from "@/utils/mapUtils";
 
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
@@ -14,7 +13,7 @@ export default function LandmarkScreen() {
   const { userLatitude, userLongitude } = useLocationStore();
   const router = useRouter();
 
-  const landmark = landmarks.find((l) => l.id.toString() === landmarkId);
+  const landmark = landmarksGlobal.find((l) => l.id.toString() === landmarkId);
 
   if (!landmark) return null;
 
