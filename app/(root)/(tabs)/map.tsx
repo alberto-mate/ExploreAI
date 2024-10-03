@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/clerk-expo";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useRef } from "react";
@@ -9,17 +10,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CurrentLocation from "@/components/CurrentLocation";
 import LandmarkList from "@/components/LandmarkList";
 import Map from "@/components/Map";
-import { landmarksGlobal } from "@/constants/landmarks";
 import { useLocationStore } from "@/store/locationStore";
-import { CityProps } from "@/types";
+import { CityProps, LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const { user } = useUser();
 
   const { userAddress } = useLocationStore();
+  const clerkId = user?.id; // Get the clerkId (user ID)
 
   // Get the current city name from the user address
   const currentCityName = userAddress?.split(",")[0] || "Unknown";
@@ -31,8 +33,18 @@ export default function HomeScreen() {
 
   const currentCity = cities?.find((city) => city.name === currentCityName);
 
-  const landmarksCity = landmarksGlobal.filter(
-    (landmark) => landmark.cityId === currentCity?.id,
+  // Query the API to get the landmarks for the city and the current user
+  const { data: landmarksCity, isLoading: isLoadingLandmarks } = useQuery<
+    LandmarkProps[]
+  >(
+    ["landmarks", currentCity?.id, clerkId],
+    () =>
+      fetchAPI(
+        `/(api)/landmarksCity?cityId=${currentCity?.id}&clerkId=${clerkId}`,
+      ).then((response) => response.data),
+    {
+      enabled: !!clerkId && !!currentCity?.id, // Only run the query if both clerkId and currentCity.id are available
+    },
   );
 
   // Animated values
@@ -52,7 +64,7 @@ export default function HomeScreen() {
     animatedBottomSheetIndex.value = index;
   };
 
-  if (isLoadingCities || !userAddress) {
+  if (isLoadingCities || isLoadingLandmarks || !userAddress) {
     return (
       <SafeAreaView edges={["bottom"]} className="flex-1 bg-gray-900">
         <View className="flex-1 justify-center items-center">
@@ -65,7 +77,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-gray-900">
       <GestureHandlerRootView>
-        <Map />
+        <Map landmarks={landmarksCity || []} />
         <CurrentLocation
           locationName={userAddress}
           animatedIndex={currentLocationAnimatedIndex}
@@ -86,7 +98,7 @@ export default function HomeScreen() {
           }}
         >
           <BottomSheetView style={{ flex: 1, paddingBottom: 20 }}>
-            <LandmarkList landmarks={landmarksCity} />
+            <LandmarkList landmarks={landmarksCity || []} />
           </BottomSheetView>
         </BottomSheet>
       </GestureHandlerRootView>

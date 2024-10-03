@@ -1,3 +1,5 @@
+import { useUser } from "@clerk/clerk-expo";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import React from "react";
 import {
@@ -7,17 +9,43 @@ import {
   FlatList,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 
-import { landmarksGlobal } from "@/constants/landmarks";
 import { CityProps, LandmarkProps } from "@/types";
+import { fetchAPI } from "@/utils/fetch";
 
 export default function CollectionGrid({ city }: { city: CityProps }) {
-  // Get the landmarks from the city
-  const landmarksCity = landmarksGlobal.filter((l) => l.cityId === city.id);
+  const { user } = useUser();
 
-  const unlockedLandmarksCity = landmarksCity.filter((l) => l.unlocked);
-  const lockedLandmarksCity = landmarksCity.filter((l) => !l.unlocked);
+  const clerkId = user?.id; // Get the clerkId (user ID)
+
+  // Query the API to get the landmarks for the city and the current user
+  const {
+    data: landmarksCity,
+    isLoading,
+    error,
+  } = useQuery<LandmarkProps[]>(
+    ["landmarks", city.id, clerkId],
+    () =>
+      fetchAPI(
+        `/(api)/landmarksCity?cityId=${city.id}&clerkId=${clerkId}`,
+      ).then((response) => response.data),
+    {
+      enabled: !!clerkId, // Only run the query if clerkId is available
+    },
+  );
+
+  if (error || !landmarksCity) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-red-500">Error loading landmarks</Text>
+      </View>
+    );
+  }
+
+  const unlockedLandmarksCity = landmarksCity.filter((l) => l.isUnlocked);
+  const lockedLandmarksCity = landmarksCity.filter((l) => !l.isUnlocked);
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
     <View style={{ width: "48%" }}>
@@ -35,6 +63,14 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
       </Link>
     </View>
   );
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="h-full">

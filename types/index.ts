@@ -8,11 +8,9 @@ export interface LandmarkProps {
   id: number;
   cityId: number;
   name: string;
-  position: {
-    latitude: number;
-    longitude: number;
-  };
-  unlocked: boolean;
+  latitude: number;
+  longitude: number;
+  isUnlocked: boolean;
   address: string;
   image: string;
 }
@@ -20,10 +18,8 @@ export interface LandmarkProps {
 export interface CityProps {
   id: number;
   name: string;
-  position: {
-    latitude: number;
-    longitude: number;
-  };
+  latitude: number;
+  longitude: number;
   image: string;
 }
 
@@ -31,11 +27,4 @@ export interface LocationProps {
   latitude: number;
   longitude: number;
   address: string;
-}
-
-export interface LocationStoreProps {
-  userLatitude: number | null;
-  userLongitude: number | null;
-  userAddress: string | null;
-  setUserLocation: (location: LocationProps) => void;
 }

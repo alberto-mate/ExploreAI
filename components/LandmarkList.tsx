@@ -15,13 +15,13 @@ export default function LandmarkList({
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
     <Pressable
       className={`p-4 rounded-md ${
-        landmark.unlocked ? "bg-green-500/20" : "bg-gray-500/20"
+        landmark.isUnlocked ? "bg-green-500/20" : "bg-gray-500/20"
       }`}
       onPress={() => router.push(`/${landmark.id}`)}
     >
       <View className="flex-row justify-between items-center">
         <Text className="font-medium text-white">{landmark.name}</Text>
-        {landmark.unlocked ? (
+        {landmark.isUnlocked ? (
           <Award color="#22c55e" size={20} />
         ) : (
           <Lock color="#9ca3af" size={20} />

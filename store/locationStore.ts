@@ -1,6 +1,13 @@
 import { create } from "zustand";
 
-import { LocationProps, LocationStoreProps } from "@/types";
+import { LocationProps } from "@/types";
+
+export interface LocationStoreProps {
+  userLatitude: number | null;
+  userLongitude: number | null;
+  userAddress: string | null;
+  setUserLocation: (location: LocationProps) => void;
+}
 
 export const useLocationStore = create<LocationStoreProps>((set: any) => ({
   userLatitude: null,

@@ -3,10 +3,9 @@ import React from "react";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 
 import { useLocationStore } from "@/store/locationStore";
+import { LandmarkProps } from "@/types";
 
-import { landmarksGlobal } from "../constants/landmarks";
-
-export default function Map() {
+export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
   const { userLatitude, userLongitude, userAddress } = useLocationStore();
 
   return (
@@ -29,13 +28,16 @@ export default function Map() {
             : undefined
         }
       >
-        {landmarksGlobal.map((landmark) => (
+        {landmarks.map((landmark) => (
           <Marker
             key={landmark.id}
-            coordinate={landmark.position}
+            coordinate={{
+              latitude: landmark.latitude,
+              longitude: landmark.longitude,
+            }}
             title={landmark.name}
           >
-            <MapPin color={landmark.unlocked ? "#22c55e" : "#6b7280"} />
+            <MapPin color={landmark.isUnlocked ? "#22c55e" : "#6b7280"} />
           </Marker>
         ))}
         {userLatitude && userLongitude && userAddress && (
