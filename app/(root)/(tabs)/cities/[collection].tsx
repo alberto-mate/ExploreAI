@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
@@ -6,22 +7,43 @@ import { View, Text, Pressable, ActivityIndicator } from "react-native";
 
 import CollectionGrid from "@/components/CollectionGrid";
 import ProgressBar from "@/components/ProgressBar";
-import { CityProps } from "@/types";
+import { CityProgress, CityProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
 
 export default function CollectionScreen() {
   const { collection: cityId } = useLocalSearchParams();
   const router = useRouter();
+  const { user } = useUser();
+  const clerkId = user?.id; // Get the clerkId (user ID)
 
   const {
     data: cities,
     isLoading,
     error,
   } = useQuery<CityProps[]>(["cities"], () =>
-    fetchAPI("/(api)/cities").then((response) => response.data),
+    fetchAPI("/(api)/cities")
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error("Error fetching cities:", error);
+        return { data: [] };
+      }),
   );
 
-  if (isLoading)
+  const { data: cityProgress, isLoading: isLoadingProgress } = useQuery<
+    CityProgress[]
+  >(
+    ["cityProgress", clerkId],
+    () =>
+      fetchAPI(`/(api)/cityProgress?&clerkId=${clerkId}`).then(
+        (response) => response.data,
+      ),
+    {
+      enabled: !!clerkId,
+      staleTime: 60000,
+    },
+  );
+
+  if (isLoading || isLoadingProgress)
     return (
       <View className="flex-1 bg-gray-900 justify-center items-center">
         <ActivityIndicator size="small" color="#fff" />
@@ -46,6 +68,8 @@ export default function CollectionScreen() {
     );
   }
 
+  const currentCityProgress = cityProgress?.[city.id];
+
   return (
     <View className="flex-1 bg-gray-900">
       <Stack.Screen
@@ -65,10 +89,15 @@ export default function CollectionScreen() {
         <Text className="text-xl font-semibold mb-4 text-gray-300">
           Your Collection
         </Text>
-        <ProgressBar progress={33} />
-        <Text className="text-center text-lg font-medium mb-6 text-white">
-          33% Complete - {city?.name || "Collection"} Collection
-        </Text>
+        {currentCityProgress && (
+          <>
+            <ProgressBar progress={currentCityProgress.progress} />
+            <Text className="text-center text-lg font-medium mb-6 text-white">
+              {`${currentCityProgress.progress.toFixed(0)}% Completed of a total ${currentCityProgress.totalLandmarks} Landmarks`}
+            </Text>
+          </>
+        )}
+
         <CollectionGrid city={city} />
       </View>
     </View>

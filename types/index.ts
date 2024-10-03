@@ -28,3 +28,13 @@ export interface LocationProps {
   longitude: number;
   address: string;
 }
+
+export interface CityProgress {
+  [cityId: string]: {
+    cityName: string;
+    totalLandmarks: number;
+    unlockedLandmarks: number;
+    lockedLandmarks: number;
+    progress: number;
+  };
+}
