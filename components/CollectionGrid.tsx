@@ -26,7 +26,7 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
     isLoading,
     error,
   } = useQuery<LandmarkProps[]>(
-    ["landmarks", city.id, clerkId],
+    ["landmarksCity", city.id, clerkId],
     () =>
       fetchAPI(
         `/(api)/landmarksCity?cityId=${city.id}&clerkId=${clerkId}`,

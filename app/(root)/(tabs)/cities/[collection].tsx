@@ -12,9 +12,9 @@ import { fetchAPI } from "@/utils/fetch";
 
 export default function CollectionScreen() {
   const { collection: cityId } = useLocalSearchParams();
-  const router = useRouter();
   const { user } = useUser();
   const clerkId = user?.id; // Get the clerkId (user ID)
+  const router = useRouter();
 
   const {
     data: cities,
@@ -43,9 +43,28 @@ export default function CollectionScreen() {
     },
   );
 
+  const StackCollectionScreen = ({ title }: { title?: string }) => {
+    return (
+      <Stack.Screen
+        options={{
+          title: title || "Collection",
+          headerShown: true,
+          headerStyle: { backgroundColor: "#1F2937" },
+          headerTintColor: "#fff",
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()}>
+              <ArrowLeft color="#fff" size={24} />
+            </Pressable>
+          ),
+        }}
+      />
+    );
+  };
+
   if (isLoading || isLoadingProgress)
     return (
       <View className="flex-1 bg-gray-900 justify-center items-center">
+        <StackCollectionScreen title="Loading..." />
         <ActivityIndicator size="small" color="#fff" />
       </View>
     );
@@ -53,6 +72,7 @@ export default function CollectionScreen() {
   if (error || !cities) {
     return (
       <View className="flex-1 bg-gray-900 justify-center items-center">
+        <StackCollectionScreen title="Error" />
         <Text className="text-red-500">Error: {String(error)}</Text>
       </View>
     );
@@ -72,19 +92,8 @@ export default function CollectionScreen() {
 
   return (
     <View className="flex-1 bg-gray-900">
-      <Stack.Screen
-        options={{
-          title: city?.name || "Collection",
-          headerShown: true,
-          headerStyle: { backgroundColor: "#1F2937" },
-          headerTintColor: "#fff",
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()}>
-              <ArrowLeft color="#fff" size={24} />
-            </Pressable>
-          ),
-        }}
-      />
+      <StackCollectionScreen title={city.name} />
+
       <View className="p-6">
         <Text className="text-xl font-semibold mb-4 text-gray-300">
           Your Collection

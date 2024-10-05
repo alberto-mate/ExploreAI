@@ -37,7 +37,7 @@ export default function HomeScreen() {
   const { data: landmarksCity, isLoading: isLoadingLandmarks } = useQuery<
     LandmarkProps[]
   >(
-    ["landmarks", currentCity?.id, clerkId],
+    ["landmarksCity", currentCity?.id, clerkId],
     () =>
       fetchAPI(
         `/(api)/landmarksCity?cityId=${currentCity?.id}&clerkId=${clerkId}`,

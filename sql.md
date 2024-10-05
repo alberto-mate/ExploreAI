@@ -36,6 +36,8 @@ CREATE TABLE userLandmarks (
   FOREIGN KEY (landmark_id) REFERENCES landmarks(id) ON DELETE CASCADE
 );
 
+ALTER TABLE userLandmarks
+ADD CONSTRAINT userLandmarks_unique UNIQUE (landmark_id, clerk_id);
 ```
 
 ## Insert data

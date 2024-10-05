@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-expo";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import React, { useState } from "react";
@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import CustomButton from "@/components/CustomButton";
 import { useLocationStore } from "@/store/locationStore";
 import { LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
@@ -20,25 +21,49 @@ import { calculateDistance } from "@/utils/mapUtils";
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false); // Track unlock state
   const { userLatitude, userLongitude } = useLocationStore();
   const router = useRouter();
   const { user } = useUser();
   const clerkId = user?.id;
+
+  const queryClient = useQueryClient();
 
   const {
     data: landmark,
     isLoading,
     error,
   } = useQuery<LandmarkProps>(
-    ["landmarks", landmarkId, clerkId],
+    ["landmark", landmarkId, clerkId],
     () =>
       fetchAPI(
         `/(api)/landmark?landmarkId=${landmarkId}&clerkId=${clerkId}`,
       ).then((response) => response.data),
-    {
-      enabled: !!clerkId,
-    },
+    { enabled: !!clerkId },
   );
+
+  // Mutation to update unlock state
+  const mutationLandmark = useMutation({
+    mutationFn: (newUnlockState: boolean) =>
+      fetchAPI("/(api)/landmark", {
+        method: "POST",
+        body: JSON.stringify({
+          landmarkId,
+          clerkId,
+          isUnlocked: newUnlockState,
+        }),
+      }),
+    onSuccess: () => {
+      // Invalidate the cache so that the new state is fetched after the mutation
+      queryClient.invalidateQueries(["landmark", landmarkId, clerkId]);
+      queryClient.invalidateQueries([
+        "landmarksCity",
+        landmark?.cityId,
+        clerkId,
+      ]);
+      queryClient.invalidateQueries(["cityProgress", clerkId]);
+    },
+  });
 
   const LoadingContent = () => (
     <View className="flex-1 justify-center items-center bg-gray-900">
@@ -111,6 +136,23 @@ export default function LandmarkScreen() {
             <Text className="text-gray-300 mb-4">
               Distance: {distance} km from your location
             </Text>
+
+            {/* Unlock Button */}
+            <CustomButton
+              title={
+                mutationLandmark.isLoading
+                  ? " "
+                  : landmark.isUnlocked
+                    ? "Unlocked"
+                    : "Locked"
+              }
+              IconLeft={
+                mutationLandmark.isLoading ? ActivityIndicator : undefined
+              }
+              bgVariant={landmark.isUnlocked ? "success" : "danger"} // Change color based on state
+              onPress={() => mutationLandmark.mutate(!landmark.isUnlocked)} // Toggle unlock state
+              className="mb-4"
+            />
 
             <View className="flex-row space-x-2 mb-4">
               {["History", "Fun Facts", "Cultural Insights"].map((info) => (

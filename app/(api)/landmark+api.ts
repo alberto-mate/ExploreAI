@@ -50,3 +50,34 @@ export async function GET(request: Request) {
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+// Update the unlock state of a landmark for a user
+export async function POST(request: Request) {
+  try {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const { landmarkId, clerkId, isUnlocked } = await request.json();
+
+    if (!landmarkId || !clerkId || typeof isUnlocked === "undefined") {
+      return Response.json(
+        {
+          error: "Missing required fields: landmarkId, clerkId, or isUnlocked",
+        },
+        { status: 400 },
+      );
+    }
+
+    const response = await sql`
+      INSERT INTO userLandmarks (landmark_id, clerk_id, is_unlocked)
+      VALUES (${landmarkId}, ${clerkId}, ${isUnlocked})
+      ON CONFLICT (landmark_id, clerk_id)
+      DO UPDATE SET is_unlocked = EXCLUDED.is_unlocked;
+    `;
+
+    return new Response(JSON.stringify({ data: response[0] }), {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error updating landmark unlock state:", error);
+    return Response.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
