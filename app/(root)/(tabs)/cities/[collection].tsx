@@ -6,6 +6,7 @@ import React from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 
 import CollectionGrid from "@/components/CollectionGrid";
+import InfoButtons from "@/components/InfoButtons";
 import ProgressBar from "@/components/ProgressBar";
 import { CityProgress, CityProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
@@ -106,6 +107,8 @@ export default function CollectionScreen() {
             </Text>
           </>
         )}
+
+        <InfoButtons />
 
         <CollectionGrid city={city} />
       </View>

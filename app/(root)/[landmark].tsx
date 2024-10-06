@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import CustomButton from "@/components/CustomButton";
+import InfoButtons from "@/components/InfoButtons";
 import { useLocationStore } from "@/store/locationStore";
 import { LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
@@ -20,8 +21,6 @@ import { calculateDistance } from "@/utils/mapUtils";
 
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
-  const [activeInfo, setActiveInfo] = useState<string | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState(false); // Track unlock state
   const { userLatitude, userLongitude } = useLocationStore();
   const router = useRouter();
   const { user } = useUser();
@@ -87,19 +86,6 @@ export default function LandmarkScreen() {
         )
       : "Unknown";
 
-  const getInfoText = (infoType: string) => {
-    switch (infoType) {
-      case "History":
-        return "This landmark has a rich history that dates back to the 19th century.";
-      case "Fun Facts":
-        return "The landmark is known for its unique architecture and design.";
-      case "Cultural Insights":
-        return "The landmark is a symbol of French culture and heritage.";
-      default:
-        return "";
-    }
-  };
-
   return (
     <>
       <Stack.Screen
@@ -154,32 +140,7 @@ export default function LandmarkScreen() {
               className="mb-4"
             />
 
-            <View className="flex-row space-x-2 mb-4">
-              {["History", "Fun Facts", "Cultural Insights"].map((info) => (
-                <Pressable
-                  key={info}
-                  className={`bg-blue-500 p-2 rounded-md ${
-                    activeInfo === info ? "bg-blue-700" : ""
-                  }`}
-                  onPress={() =>
-                    setActiveInfo(activeInfo === info ? null : info)
-                  }
-                >
-                  <Text className="text-white capitalize">{info}</Text>
-                </Pressable>
-              ))}
-            </View>
-
-            {activeInfo && (
-              <View className="bg-gray-800 p-4 rounded-md mb-4">
-                <Text className="text-white mb-2">
-                  {getInfoText(activeInfo)}
-                </Text>
-                <Pressable className="bg-blue-500 p-2 rounded-md flex-row items-center">
-                  <Text className="text-white">Listen</Text>
-                </Pressable>
-              </View>
-            )}
+            {landmark.isUnlocked && <InfoButtons />}
           </View>
         </ScrollView>
       )}
