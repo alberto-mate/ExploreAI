@@ -140,7 +140,7 @@ export default function LandmarkScreen() {
               className="mb-4"
             />
 
-            {landmark.isUnlocked && <InfoButtons />}
+            {landmark.isUnlocked && <InfoButtons name={landmark.name} />}
           </View>
         </ScrollView>
       )}

@@ -108,7 +108,7 @@ export default function CollectionScreen() {
           </>
         )}
 
-        <InfoButtons />
+        <InfoButtons name={city.name} />
 
         <CollectionGrid city={city} />
       </View>
