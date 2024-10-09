@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
 import { History, Lightbulb, Globe2, Volume2 } from "lucide-react-native";
-import OpenAI from "openai";
 import React, { useState } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import Animated, {
@@ -8,54 +8,39 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// Initialize OpenAI API
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_KEY!,
-});
+import { fetchAPI } from "@/utils/fetch";
 
 const InfoButtons = ({ name }: { name: string }) => {
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
-  const [content, setContent] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
 
   const infoTypes = [
-    {
-      title: "History",
-      icon: History,
-      prompt: `Provide a detailed historical description of the landmark named ${name}.`,
-    },
-    {
-      title: "Fun Facts",
-      icon: Lightbulb,
-      prompt: `Share some fun facts about the landmark named ${name}.`,
-    },
-    {
-      title: "Cultural Insights",
-      icon: Globe2,
-      prompt: `Give some cultural insights on the landmark named ${name}.`,
-    },
+    { title: "History", icon: History },
+    { title: "Fun Facts", icon: Lightbulb },
+    { title: "Cultural Insights", icon: Globe2 },
   ];
 
-  // Fetch content from OpenAI API
-  const fetchContent = async (infoTitle: string) => {
-    const info = infoTypes.find((info) => info.title === infoTitle);
-    if (!info) return;
+  // Fetching content using React Query and your fetchAPI function
+  const {
+    data: content,
+    isLoading,
+    error,
+  } = useQuery(
+    ["landmarkInfo", name, activeInfo], // Query key: name and active info type
+    () =>
+      fetchAPI(
+        `/(api)/landmarkInfo?name=${encodeURIComponent(name)}&infoTitle=${encodeURIComponent(activeInfo!)}`,
+      ).then((response) => response.data),
+    {
+      enabled: !!activeInfo, // Only run query when activeInfo is not null
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  );
 
-    setLoading(true);
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: info.prompt },
-        ],
-      });
-      setContent(completion.choices[0].message.content);
-    } catch (error) {
-      setContent("Sorry, there was an issue fetching the information.");
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const handlePress = (infoTitle: string) => {
+    if (activeInfo === infoTitle) {
+      setActiveInfo(null); // Collapse if pressing the same button
+    } else {
+      setActiveInfo(infoTitle); // Set the active info type to fetch
     }
   };
 
@@ -66,15 +51,6 @@ const InfoButtons = ({ name }: { name: string }) => {
       : withTiming(0, { duration: 500 }),
     transform: [{ translateY: activeInfo ? withSpring(0) : withSpring(10) }],
   }));
-
-  const handlePress = (infoTitle: string) => {
-    if (activeInfo === infoTitle) {
-      setActiveInfo(null);
-    } else {
-      setActiveInfo(infoTitle);
-      fetchContent(infoTitle); // Fetch content when a button is pressed
-    }
-  };
 
   return (
     <View className="space-y-4 mb-8">
@@ -99,9 +75,7 @@ const InfoButtons = ({ name }: { name: string }) => {
                 className="mb-1"
               />
               <Text
-                className={`text-xs font-medium ${
-                  isActive ? "text-white" : "text-gray-400"
-                }`}
+                className={`text-xs font-medium ${isActive ? "text-white" : "text-gray-400"}`}
               >
                 {info.title}
               </Text>
@@ -115,11 +89,15 @@ const InfoButtons = ({ name }: { name: string }) => {
           style={[animatedStyle]}
           className="bg-gray-800 p-4 rounded-xl"
         >
-          {loading ? (
+          {isLoading ? (
             <ActivityIndicator size="small" color="#ffffff" className="mb-4" />
+          ) : error ? (
+            <Text className="text-red-500 text-base mb-4 leading-6">
+              Error loading content.
+            </Text>
           ) : (
             <Text className="text-white text-base mb-4 leading-6">
-              {content}
+              {content || "No content available"}
             </Text>
           )}
 
