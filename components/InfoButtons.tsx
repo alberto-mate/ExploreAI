@@ -14,10 +14,17 @@ const InfoButtons = ({ name }: { name: string }) => {
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
 
   const infoTypes = [
-    { title: "History", icon: History },
-    { title: "Fun Facts", icon: Lightbulb },
-    { title: "Cultural Insights", icon: Globe2 },
+    { title: "History", icon: History, promptKey: "landmark-history" },
+    { title: "Fun Facts", icon: Lightbulb, promptKey: "landmark-funfacts" },
+    {
+      title: "Cultural Insights",
+      icon: Globe2,
+      promptKey: "landmark-cultural",
+    },
   ];
+
+  const activePromptKey =
+    infoTypes.find((info) => info.title === activeInfo)?.promptKey || "";
 
   // Fetching content using React Query and your fetchAPI function
   const {
@@ -25,13 +32,13 @@ const InfoButtons = ({ name }: { name: string }) => {
     isLoading,
     error,
   } = useQuery(
-    ["landmarkInfo", name, activeInfo], // Query key: name and active info type
+    ["landmarkInfo", name, activePromptKey], // Query key: name and active prompt key
     () =>
       fetchAPI(
-        `/(api)/landmarkInfo?name=${encodeURIComponent(name)}&infoTitle=${encodeURIComponent(activeInfo!)}`,
+        `/(api)/landmarkInfo?name=${encodeURIComponent(name)}&promptKey=${encodeURIComponent(activePromptKey!)}`,
       ).then((response) => response.data),
     {
-      enabled: !!activeInfo, // Only run query when activeInfo is not null
+      enabled: !!activePromptKey, // Only run query when activePromptKey is not null
       staleTime: 1000 * 60 * 60 * 24, // 24 hours
     },
   );

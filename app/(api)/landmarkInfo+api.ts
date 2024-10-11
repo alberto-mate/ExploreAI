@@ -7,23 +7,16 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get("name");
-    const infoTitle = searchParams.get("infoTitle");
+    const promptKey = searchParams.get("promptKey");
 
-    if (!name || !infoTitle) {
+    if (!name || !promptKey) {
       return Response.json(
-        { error: "Missing name or infoTitle" },
+        { error: "Missing name or promptKey" },
         { status: 400 },
       );
     }
 
-    // Define the prompt based on the infoTitle
-    const prompts: Record<string, string> = {
-      History: `Provide a detailed historical description of the landmark named ${name}.`,
-      "Fun Facts": `Share some fun facts about the landmark named ${name}.`,
-      "Cultural Insights": `Give some cultural insights on the landmark named ${name}.`,
-    };
-
-    const prompt = prompts[infoTitle];
+    const prompt = getPrompt(promptKey, name);
 
     if (!prompt) {
       return Response.json({ error: "Invalid infoTitle" }, { status: 400 });
@@ -63,4 +56,19 @@ export async function GET(request: Request) {
     console.error("Error fetching landmark info:", error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
+}
+
+// Define the prompt based on the infoTitle
+function getPrompt(promptKey: string, name: string): string {
+  const prefix = `You are a friendly tour guide working for ExploreAi. Your job is to help users explore the city by sharing interesting and engaging information. Today, you're introducing ${name}.`;
+  const suffix = `Remember to keep the content concise, fun, and interesting—just like a great tour guide! Please do not use emojis or slang. Remove the introduction paragraph and go to the point.`;
+
+  const prompts: Record<string, string> = {
+    "landmark-history": `Tell me a cool story from the past of ${name}. Make it fun but keep it real!`,
+    "landmark-funfacts": `What are some quirky or fun facts about ${name}? Keep it light and playful! Output it in a bullet-point format.`,
+    "landmark-cultural": `What makes ${name} special in terms of culture? Share something that would surprise a visitor!`,
+  };
+
+  // Combine prefix, main prompt, and suffix
+  return `${prefix} ${prompts[promptKey]} ${suffix}`;
 }
