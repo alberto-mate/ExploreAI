@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 
 import CollectionGrid from "@/components/CollectionGrid";
 import InfoButtons from "@/components/InfoButtons";
@@ -92,10 +98,9 @@ export default function CollectionScreen() {
   const currentCityProgress = cityProgress?.[city.id];
 
   return (
-    <View className="flex-1 bg-gray-900">
-      <StackCollectionScreen title={city.name} />
-
-      <View className="p-6">
+    <>
+      <ScrollView className="flex-1 bg-gray-900 p-6">
+        <StackCollectionScreen title={city.name} />
         <Text className="text-xl font-semibold mb-4 text-gray-300">
           Your Collection
         </Text>
@@ -111,7 +116,7 @@ export default function CollectionScreen() {
         <InfoButtons name={city.name} />
 
         <CollectionGrid city={city} />
-      </View>
-    </View>
+      </ScrollView>
+    </>
   );
 }

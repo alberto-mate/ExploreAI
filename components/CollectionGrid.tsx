@@ -14,6 +14,8 @@ import {
 
 import { CityProps, LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
+import { LinearGradient } from "expo-linear-gradient";
+import { MapPin } from "lucide-react-native";
 
 export default function CollectionGrid({ city }: { city: CityProps }) {
   const { user } = useUser();
@@ -48,17 +50,31 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
   const lockedLandmarksCity = landmarksCity.filter((l) => !l.isUnlocked);
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
-    <View style={{ width: "48%" }}>
+    <View style={{ width: "48%", marginBottom: 16 }}>
       <Link href={`/${landmark.id}`} asChild>
-        <Pressable className="bg-white/10 rounded-lg p-2 backdrop-blur-md">
-          <Image
-            source={{ uri: landmark.image }}
-            className="w-full h-24 rounded-md mb-2"
-            resizeMode="cover"
-          />
-          <Text className="text-sm font-medium text-white text-center">
-            {landmark.name}
-          </Text>
+        <Pressable className="rounded-2xl overflow-hidden shadow-lg">
+          <View className="relative">
+            <Image
+              source={{ uri: landmark.image }}
+              className="w-full h-48"
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,20,0.8)"]}
+              className="absolute w-full h-[60%] bottom-0 overflow-hidden rounded-b-md"
+            />
+            <View className="absolute bottom-0 left-0 right-0 p-3">
+              <Text className="text-white text-lg font-bold mb-1">
+                {landmark.name}
+              </Text>
+              <View className="flex-row items-center">
+                <MapPin size={14} color="white" />
+                <Text className="text-white text-xs ml-1">
+                  {landmark.address.split(",")[0]}
+                </Text>
+              </View>
+            </View>
+          </View>
         </Pressable>
       </Link>
     </View>
@@ -73,7 +89,7 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
   }
 
   return (
-    <ScrollView className="h-full">
+    <ScrollView className="h-full mb-32">
       <View className="mb-4">
         <Text className="text-xl font-semibold mb-4 text-gray-300">
           Unlocked Landmarks
@@ -84,7 +100,6 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: "space-between" }}
-          ItemSeparatorComponent={() => <View className="h-4" />}
           scrollEnabled={false}
         />
       </View>
@@ -98,7 +113,6 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: "space-between" }}
-          ItemSeparatorComponent={() => <View className="h-4" />}
           scrollEnabled={false}
         />
       </View>
