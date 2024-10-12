@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { History, Lightbulb, Globe2, Volume2 } from "lucide-react-native";
 import React, { useState } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
@@ -7,11 +6,11 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-
-import { fetchAPI } from "@/utils/fetch";
+import { useOpenAI } from "@/hooks/useOpenAI"; // Import the new hook
 
 const InfoButtons = ({ name }: { name: string }) => {
   const [activeInfo, setActiveInfo] = useState<string | null>(null);
+  const { text, isLoading, startStreaming } = useOpenAI(); // Use the custom hook
 
   const infoTypes = [
     { title: "History", icon: History, promptKey: "landmark-history" },
@@ -23,31 +22,14 @@ const InfoButtons = ({ name }: { name: string }) => {
     },
   ];
 
-  const activePromptKey =
-    infoTypes.find((info) => info.title === activeInfo)?.promptKey || "";
-
-  // Fetching content using React Query and your fetchAPI function
-  const {
-    data: content,
-    isLoading,
-    error,
-  } = useQuery(
-    ["landmarkInfo", name, activePromptKey], // Query key: name and active prompt key
-    () =>
-      fetchAPI(
-        `/(api)/landmarkInfo?name=${encodeURIComponent(name)}&promptKey=${encodeURIComponent(activePromptKey!)}`,
-      ).then((response) => response.data),
-    {
-      enabled: !!activePromptKey, // Only run query when activePromptKey is not null
-      staleTime: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  );
-
   const handlePress = (infoTitle: string) => {
     if (activeInfo === infoTitle) {
       setActiveInfo(null); // Collapse if pressing the same button
     } else {
       setActiveInfo(infoTitle); // Set the active info type to fetch
+      const activePromptKey =
+        infoTypes.find((info) => info.title === infoTitle)?.promptKey || "";
+      startStreaming(activePromptKey, name); // Start streaming the content
     }
   };
 
@@ -98,14 +80,8 @@ const InfoButtons = ({ name }: { name: string }) => {
         >
           {isLoading ? (
             <ActivityIndicator size="small" color="#ffffff" className="mb-4" />
-          ) : error ? (
-            <Text className="text-red-500 text-base mb-4 leading-6">
-              Error loading content.
-            </Text>
           ) : (
-            <Text className="text-white text-base mb-4 leading-6">
-              {content || "No content available"}
-            </Text>
+            <Text className="text-white text-base mb-4 leading-6">{text}</Text>
           )}
 
           <Pressable className="flex-row items-center justify-center bg-blue-600 py-3 rounded-lg">
