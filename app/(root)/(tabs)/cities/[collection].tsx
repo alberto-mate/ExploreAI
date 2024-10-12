@@ -101,17 +101,17 @@ export default function CollectionScreen() {
     <>
       <ScrollView className="flex-1 bg-gray-900 p-6">
         <StackCollectionScreen title={city.name} />
-        <Text className="text-xl font-semibold mb-4 text-gray-300">
-          Your Collection
-        </Text>
-        {currentCityProgress && (
-          <>
-            <ProgressBar progress={currentCityProgress.progress} />
-            <Text className="text-center text-lg font-medium mb-6 text-white">
-              {`${currentCityProgress.progress.toFixed(0)}% Completed of a total ${currentCityProgress.totalLandmarks} Landmarks`}
-            </Text>
-          </>
-        )}
+
+        <View className="mb-4">
+          <Text className="text-xl font-semibold mb-4 text-gray-300">
+            Your Collection
+          </Text>
+          {currentCityProgress && (
+            <>
+              <ProgressBar progress={currentCityProgress.progress} />
+            </>
+          )}
+        </View>
 
         <InfoButtons name={city.name} />
 

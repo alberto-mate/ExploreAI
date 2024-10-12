@@ -50,25 +50,26 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
   const lockedLandmarksCity = landmarksCity.filter((l) => !l.isUnlocked);
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => (
-    <View style={{ width: "48%", marginBottom: 16 }}>
+    <View className="w-[150px] mr-1">
       <Link href={`/${landmark.id}`} asChild>
-        <Pressable className="rounded-2xl overflow-hidden shadow-lg">
-          <View className="relative">
+        <Pressable className="rounded-2xl overflow-hidden shadow-lg active:opacity-80">
+          <View className="relative h-48">
             <Image
               source={{ uri: landmark.image }}
-              className="w-full h-48"
+              className="w-full h-[67%]"
               resizeMode="cover"
             />
             <LinearGradient
-              colors={["transparent", "rgba(0,0,20,0.8)"]}
-              className="absolute w-full h-[60%] bottom-0 overflow-hidden rounded-b-md"
+              colors={["transparent", "rgba(3, 3, 31,1)", "rgba(0,0,20,1)"]}
+              locations={[0.3, 0.65, 1]}
+              className="absolute w-full h-[100%] bottom-0 overflow-hidden rounded-b-md"
             />
             <View className="absolute bottom-0 left-0 right-0 p-3">
-              <Text className="text-white text-lg font-bold mb-1">
+              <Text className="text-white text-base font-bold mb-1 ">
                 {landmark.name}
               </Text>
               <View className="flex-row items-center">
-                <MapPin size={14} color="white" />
+                <MapPin size={10} color="white" />
                 <Text className="text-white text-xs ml-1">
                   {landmark.address.split(",")[0]}
                 </Text>
@@ -98,24 +99,21 @@ export default function CollectionGrid({ city }: { city: CityProps }) {
           data={unlockedLandmarksCity}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          columnWrapperStyle={{ justifyContent: "space-between" }}
-          scrollEnabled={false}
+          horizontal={true} // Enable horizontal scrolling
+          showsHorizontalScrollIndicator={false} // Optional: Hide the scroll indicator
         />
       </View>
-      <View>
-        <Text className="text-xl font-semibold mb-4 text-gray-300">
-          Locked Landmarks
-        </Text>
-        <FlatList
-          data={lockedLandmarksCity}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          columnWrapperStyle={{ justifyContent: "space-between" }}
-          scrollEnabled={false}
-        />
-      </View>
+      <View></View>
+      <Text className="text-xl font-semibold mb-4 text-gray-300">
+        Locked Landmarks
+      </Text>
+      <FlatList
+        data={lockedLandmarksCity}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal={true} // Enable horizontal scrolling
+        showsHorizontalScrollIndicator={false} // Optional: Hide the scroll indicator
+      />
     </ScrollView>
   );
 }
