@@ -140,4 +140,15 @@ export const landmarksGlobal = [
     image:
       "https://en.japantravel.com/photo/poi-5-214199/1200x630/tokyo-sensoji-temple-214199.jpg",
   },
+  {
+    id: 14,
+    name: "The Sterling",
+    cityId: 1,
+    latitude: 1.3358728,
+    longitude: 103.7793987,
+    isUnlocked: false,
+    address: "1001 Bukit Timah Rd, Singapore 596288",
+    image:
+      "https://lh3.googleusercontent.com/p/AF1QipON3C3hVLp5DjZ1AXu8xtVXl6g56DGPXoHyPSYQ=s680-w680-h510",
+  },
 ];
