@@ -6,6 +6,7 @@ import { ActivityIndicator, Dimensions, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect } from "react";
 
 import CurrentLocation from "@/components/CurrentLocation";
 import LandmarkList from "@/components/LandmarkList";
@@ -13,6 +14,7 @@ import Map from "@/components/Map";
 import { useLocationStore } from "@/store/locationStore";
 import { CityProps, LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
+import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -46,6 +48,11 @@ export default function HomeScreen() {
       enabled: !!clerkId && !!currentCity?.id, // Only run the query if both clerkId and currentCity.id are available
     },
   );
+
+  const { setLandmarks } = useLandmarkProximityStore();
+  useEffect(() => {
+    setLandmarks(landmarksCity || []);
+  }, [landmarksCity]);
 
   // Animated values
   const animatedBottomSheetIndex = useSharedValue(0);

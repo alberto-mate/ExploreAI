@@ -83,7 +83,7 @@ export default function LandmarkScreen() {
           userLongitude,
           landmark.latitude,
           landmark.longitude,
-        )
+        ).toFixed(2)
       : "Unknown";
 
   return (

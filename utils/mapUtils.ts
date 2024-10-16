@@ -3,7 +3,7 @@ export function calculateDistance(
   lon1: number,
   lat2: number,
   lon2: number,
-): string {
+): number {
   const R = 6371; // Radius of the earth in km
   const dLat = deg2rad(lat2 - lat1);
   const dLon = deg2rad(lon2 - lon1);
@@ -15,7 +15,7 @@ export function calculateDistance(
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const d = R * c; // Distance in km
-  return d.toFixed(2);
+  return d;
 }
 
 function deg2rad(deg: number): number {
@@ -35,7 +35,7 @@ export const mapStyle = [
     elementType: "labels.text.fill",
     stylers: [
       {
-        color: "#746855",
+        color: "#746fad",
       },
     ],
   },

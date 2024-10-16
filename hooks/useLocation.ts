@@ -2,9 +2,11 @@ import * as Location from "expo-location";
 import { useEffect } from "react";
 
 import { useLocationStore } from "@/store/locationStore";
+import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
 
 export default function useLocation() {
   const { setUserLocation } = useLocationStore();
+  const { updateProximity } = useLandmarkProximityStore();
 
   useEffect(() => {
     (async () => {
@@ -15,17 +17,20 @@ export default function useLocation() {
       }
 
       let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
 
       const address = await Location.reverseGeocodeAsync({
-        latitude: location.coords?.latitude!,
-        longitude: location.coords?.longitude!,
+        latitude,
+        longitude,
       });
 
       setUserLocation({
-        latitude: location.coords?.latitude,
-        longitude: location.coords?.longitude,
+        latitude,
+        longitude,
         address: `${address[0].city}, ${address[0].country}`,
       });
+
+      updateProximity(latitude, longitude);
     })();
   }, []);
 }

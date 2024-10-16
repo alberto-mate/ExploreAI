@@ -5,9 +5,11 @@ import MapView, { Marker, Circle, PROVIDER_DEFAULT } from "react-native-maps";
 import { useLocationStore } from "@/store/locationStore";
 import { LandmarkProps } from "@/types";
 import { radiusUnlocked } from "@/constants";
+import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
 
 export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
   const { userLatitude, userLongitude, userAddress } = useLocationStore();
+  const { getUserIsInside } = useLandmarkProximityStore();
 
   return (
     <>
@@ -18,6 +20,7 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
         showsCompass={true}
         showsPointsOfInterest={false}
         provider={PROVIDER_DEFAULT}
+        mapType="mutedStandard"
         initialRegion={
           userLatitude && userLongitude
             ? {
@@ -38,7 +41,16 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
               }}
               title={landmark.name}
             >
-              <MapPin color={landmark.isUnlocked ? "#22c55e" : "#6b7280"} />
+              <MapPin
+                color={
+                  landmark.isUnlocked
+                    ? "#22c55e"
+                    : getUserIsInside(landmark.id)
+                      ? "#8b5cf6"
+                      : "#9ca3af"
+                }
+                size={30}
+              />
             </Marker>
             <Circle
               center={{
@@ -46,8 +58,16 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
                 longitude: landmark.longitude,
               }}
               radius={radiusUnlocked}
-              strokeColor="rgba(255, 255, 0, 0.5)" // Yellow with 50% opacity
-              fillColor="rgba(255, 255, 0, 0.1)" // Yellow with 20% opacity
+              strokeColor={
+                getUserIsInside(landmark.id)
+                  ? "rgba(139, 92, 246, 0.5)"
+                  : "rgba(255, 255, 0, 0.5)"
+              } // Purple with 50% opacity
+              fillColor={
+                getUserIsInside(landmark.id)
+                  ? "rgba(139, 92, 246, 0.1)"
+                  : "rgba(255, 255, 0, 0.1)"
+              } // Purple with 10% opacity
               strokeWidth={4}
             />
           </React.Fragment>
