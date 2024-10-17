@@ -1,5 +1,5 @@
-import * as Location from "expo-location";
 import { useEffect } from "react";
+import * as Location from "expo-location"; // Assuming you're using Expo
 
 import { useLocationStore } from "@/store/locationStore";
 import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
@@ -9,28 +9,54 @@ export default function useLocation() {
   const { updateProximity } = useLandmarkProximityStore();
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
+    let watcher: Location.LocationSubscription | null = null;
+
+    const startWatchingLocation = async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access location was denied");
+          return;
+        }
+
+        watcher = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 5000, // Update every 5 seconds
+            distanceInterval: 10, // Update every 10 meters
+          },
+          async (location) => {
+            const { latitude, longitude } = location.coords;
+
+            try {
+              const address = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude,
+              });
+
+              setUserLocation({
+                latitude,
+                longitude,
+                address: `${address[0].city}, ${address[0].country}`,
+              });
+
+              updateProximity(latitude, longitude);
+            } catch (error) {
+              console.error("Reverse geocoding failed", error);
+            }
+          },
+        );
+      } catch (error) {
+        console.error("Location tracking failed", error);
       }
+    };
 
-      let location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
+    startWatchingLocation();
 
-      const address = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-
-      setUserLocation({
-        latitude,
-        longitude,
-        address: `${address[0].city}, ${address[0].country}`,
-      });
-
-      updateProximity(latitude, longitude);
-    })();
-  }, []);
+    return () => {
+      if (watcher) {
+        watcher.remove(); // Clean up the watcher when the component unmounts
+      }
+    };
+  }, [setUserLocation, updateProximity]); // Ensure functions are stable and memoized
 }

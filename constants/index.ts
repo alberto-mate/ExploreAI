@@ -1,1 +1,1 @@
-export const radiusUnlocked = 400;
+export const radiusUnlocked = 1000;

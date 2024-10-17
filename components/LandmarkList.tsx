@@ -1,10 +1,18 @@
 import { useRouter } from "expo-router";
-import { Award, Lock } from "lucide-react-native";
+import { Award, Lock, MapPin } from "lucide-react-native";
 import React from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Image,
+} from "react-native";
 
 import { LandmarkProps } from "../types";
 import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function LandmarkList({
   landmarks,
@@ -13,7 +21,10 @@ export default function LandmarkList({
 }) {
   const router = useRouter();
 
-  const { getUserIsInside } = useLandmarkProximityStore();
+  const { getUserIsInside, getListLandmarksInsideLocked } =
+    useLandmarkProximityStore();
+
+  const landmarksInsideLocked = getListLandmarksInsideLocked();
 
   const renderItem = ({ item: landmark }: { item: LandmarkProps }) => {
     const isUserInside = getUserIsInside(landmark.id);
@@ -41,9 +52,53 @@ export default function LandmarkList({
     );
   };
 
+  const renderInsideLocked = ({ item: landmark }: { item: LandmarkProps }) => {
+    return (
+      <Pressable
+        className="rounded-md overflow-hidden shadow-lg active:opacity-80"
+        onPress={() => router.push(`/${landmark.id}`)}
+      >
+        <View className="relative h-36">
+          <Image
+            source={{ uri: landmark.image }}
+            className="w-full h-[100%]"
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={["transparent", "rgb(106, 29, 217)"]}
+            locations={[0, 0.8]}
+            className="absolute w-full h-[100%] bottom-0 overflow-hidden rounded-b-md"
+          />
+          <View className="absolute bottom-0 left-0 right-0 p-3">
+            <Text className="text-white text-base mb-1 ">
+              Unlock it now! 🎉
+            </Text>
+
+            <Text className="text-white text-xl font-bold mb-1 ">
+              {landmark.name}
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
-    <View className="p-6 flex-1">
-      <View className="w-full h-24 bg-gray-800 rounded-md mb-6"></View>
+    <ScrollView className="p-6 flex-1">
+      {landmarksInsideLocked.length > 0 && (
+        <View className="mb-4">
+          <Text className="text-xl font-semibold mb-4 text-gray-300">
+            Landmarks Inside Locked
+          </Text>
+          <FlatList
+            data={landmarksInsideLocked}
+            renderItem={renderInsideLocked}
+            keyExtractor={(item) => item.id.toString()}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            scrollEnabled={false}
+          />
+        </View>
+      )}
 
       <Text className="text-xl font-semibold mb-4 text-gray-300">
         Nearby Landmarks
@@ -56,8 +111,10 @@ export default function LandmarkList({
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className="h-3" />}
+          scrollEnabled={false}
         />
       )}
-    </View>
+      <View className="h-20" />
+    </ScrollView>
   );
 }

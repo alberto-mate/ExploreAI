@@ -50,9 +50,12 @@ export default function HomeScreen() {
   );
 
   const { setLandmarks } = useLandmarkProximityStore();
+  // Update Zustand store when new landmarks are fetched
   useEffect(() => {
-    setLandmarks(landmarksCity || []);
-  }, [landmarksCity]);
+    if (landmarksCity) {
+      setLandmarks(landmarksCity);
+    }
+  }, [landmarksCity, setLandmarks]); // Re-run effect when landmarksCity changes
 
   // Animated values
   const animatedBottomSheetIndex = useSharedValue(0);

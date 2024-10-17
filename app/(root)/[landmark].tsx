@@ -18,6 +18,8 @@ import { useLocationStore } from "@/store/locationStore";
 import { LandmarkProps } from "@/types";
 import { fetchAPI } from "@/utils/fetch";
 import { calculateDistance } from "@/utils/mapUtils";
+import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
+import UnlockSlider from "@/components/UnlockSlider";
 
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
@@ -27,6 +29,8 @@ export default function LandmarkScreen() {
   const clerkId = user?.id;
 
   const queryClient = useQueryClient();
+  const { getUserIsInside } = useLandmarkProximityStore();
+  const isUserInside = getUserIsInside(Number(landmarkId));
 
   const {
     data: landmark,
@@ -139,6 +143,18 @@ export default function LandmarkScreen() {
               onPress={() => mutationLandmark.mutate(!landmark.isUnlocked)} // Toggle unlock state
               className="mb-4"
             />
+
+            {
+              // Unlock Slider
+              // Only show the unlock slider if the user is inside the landmark and it's still locked
+              isUserInside && !landmark.isUnlocked && (
+                <UnlockSlider
+                  onUnlock={() => {
+                    mutationLandmark.mutate(true);
+                  }}
+                />
+              )
+            }
 
             {landmark.isUnlocked && <InfoButtons name={landmark.name} />}
           </View>
