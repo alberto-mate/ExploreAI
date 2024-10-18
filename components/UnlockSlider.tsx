@@ -8,16 +8,15 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import ChevronLeft from "@/assets/svg/chevron-left.svg";
 
 interface ChevronProps {
-  style: ViewStyle;
   animated: Animated.Value;
   inputRange: number[];
   outputRange: string[];
 }
 
 const Chevron: React.FC<ChevronProps> = ({
-  style,
   animated,
   inputRange,
   outputRange,
@@ -28,14 +27,13 @@ const Chevron: React.FC<ChevronProps> = ({
   });
 
   return (
-    <View style={style}>
-      <Animated.View
-        style={[styles.upperChevron, { backgroundColor: chevronColor }]}
-      />
-      <Animated.View
-        style={[styles.lowerChevron, { backgroundColor: chevronColor }]}
-      />
-    </View>
+    <ChevronLeft
+      width={30}
+      height={30}
+      marginLeft={-5}
+      marginRight={-5}
+      color="black"
+    />
   );
 };
 
@@ -43,13 +41,14 @@ interface UnlockSliderProps {
   onUnlock: () => void;
 }
 
-const SLIDER_WIDTH = 92;
+const SLIDER_WIDTH = 90;
 const SLIDER_MARGIN = 10;
 
 const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
   const distance = useRef(0);
   const translationX = useRef(new Animated.Value(0)).current;
   const chevronColorAnim = useRef(new Animated.Value(0)).current;
+  const backgroundColor = useRef(new Animated.Value(0)).current;
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     const { width: layoutWidth } = event.nativeEvent.layout;
@@ -76,7 +75,11 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
       toValue: 0,
       useNativeDriver: false,
     }).start();
-  }, [translationX]);
+    Animated.spring(backgroundColor, {
+      toValue: 0,
+      useNativeDriver: false,
+    }).start();
+  }, [translationX, backgroundColor]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -84,79 +87,64 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dx > 0) {
           translationX.setValue(0);
+          backgroundColor.setValue(0);
         } else if (gestureState.dx < -distance.current) {
           translationX.setValue(-distance.current);
+          backgroundColor.setValue(1);
         } else {
           translationX.setValue(gestureState.dx);
+          backgroundColor.setValue(gestureState.dx / -distance.current);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dx < -distance.current) {
           onUnlock();
+        } else {
+          release();
         }
-        release();
       },
     }),
   ).current;
 
+  const interpolateBackgroundColor = backgroundColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#000", "#6a1dd9"],
+  });
+
   return (
-    <View
-      className="flex bg-purple-500 w-full h-[88px] rounded-full justify-between flex-row items-center"
+    <Animated.View
+      className="w-full h-[88px] rounded-full justify-between flex-row items-center border-[1px] border-gray-300/50"
+      style={{ backgroundColor: interpolateBackgroundColor }}
       onLayout={onLayout}
     >
       <Text className="text-white text-left ml-8 text-lg">Slide to unlock</Text>
       <Animated.View
         style={{
           transform: [{ translateX: translationX }],
-          marginRight: SLIDER_MARGIN, // Set margin right directly using style
+          marginRight: SLIDER_MARGIN,
+          width: SLIDER_WIDTH,
         }}
         {...panResponder.panHandlers}
-        className={`bg-white w-[${SLIDER_WIDTH}px] h-[70%] rounded-full`}
+        className={`bg-white h-[70%] rounded-full flex flex-row items-center justify-center`}
       >
         <Chevron
-          style={styles.chevron1}
           animated={chevronColorAnim}
           inputRange={[0, 0.8, 1]}
           outputRange={["#000000", "#6a1dd9", "#000000"]}
         />
         <Chevron
-          style={styles.chevron2}
           animated={chevronColorAnim}
           inputRange={[0, 0.6, 1.0]}
           outputRange={["#000000", "#6a1dd9", "#000000"]}
         />
         <Chevron
-          style={styles.chevron3}
           animated={chevronColorAnim}
           inputRange={[0, 0.4, 1]}
           outputRange={["#000000", "#6a1dd9", "#000000"]}
         />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  slider: {},
-  upperChevron: {
-    height: 14,
-    width: 3,
-    borderRadius: 1,
-    position: "absolute",
-    top: 20,
-    transform: [{ rotate: "35deg" }],
-  },
-  lowerChevron: {
-    height: 14,
-    width: 3,
-    borderRadius: 1,
-    position: "absolute",
-    top: 30,
-    transform: [{ rotate: "-35deg" }],
-  },
-  chevron1: { left: 25 },
-  chevron2: { left: 43 },
-  chevron3: { left: 61 },
-});
 
 export default UnlockSlider;
