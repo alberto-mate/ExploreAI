@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const { user } = useUser();
 
-  const { userAddress } = useLocationStore();
+  const { userAddress, userLatitude, userLongitude } = useLocationStore();
   const clerkId = user?.id; // Get the clerkId (user ID)
 
   // Get the current city name from the user address
@@ -49,11 +49,14 @@ export default function HomeScreen() {
     },
   );
 
-  const { setLandmarks } = useLandmarkProximityStore();
+  const { setLandmarks, updateProximity } = useLandmarkProximityStore();
   // Update Zustand store when new landmarks are fetched
   useEffect(() => {
     if (landmarksCity) {
       setLandmarks(landmarksCity);
+      if (userLatitude && userLongitude) {
+        updateProximity(userLatitude, userLongitude);
+      }
     }
   }, [landmarksCity, setLandmarks]); // Re-run effect when landmarksCity changes
 

@@ -65,7 +65,7 @@ export default function LandmarkList({
             resizeMode="cover"
           />
           <LinearGradient
-            colors={["transparent", "rgb(106, 29, 217)"]}
+            colors={["transparent", "#6a1dd9"]}
             locations={[0, 0.8]}
             className="absolute w-full h-[100%] bottom-0 overflow-hidden rounded-b-md"
           />

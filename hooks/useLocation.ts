@@ -22,8 +22,8 @@ export default function useLocation() {
         watcher = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
-            timeInterval: 5000, // Update every 5 seconds
-            distanceInterval: 10, // Update every 10 meters
+            timeInterval: 1000, // Update every 1 seconds
+            distanceInterval: 5, // Update every 10 meters
           },
           async (location) => {
             const { latitude, longitude } = location.coords;
