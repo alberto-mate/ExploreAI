@@ -257,15 +257,21 @@ export default function LandmarkScreen() {
                 </Text>
               </View>
             </View>
-            {landmark.isUnlocked ? (
-              <View className="bg-green-500/20 p-2 rounded-full">
-                <Unlock color="#10B981" size={24} />
-              </View>
-            ) : (
-              <View className="bg-red-500/20 p-2 rounded-full">
-                <Lock color="#EF4444" size={24} />
-              </View>
-            )}
+            <Pressable
+              onPress={() => {
+                mutationLandmark.mutate(!landmark.isUnlocked);
+              }}
+            >
+              {landmark.isUnlocked ? (
+                <View className="bg-green-500/20 p-2 rounded-full">
+                  <Unlock color="#10B981" size={24} />
+                </View>
+              ) : (
+                <View className="bg-red-500/20 p-2 rounded-full">
+                  <Lock color="#EF4444" size={24} />
+                </View>
+              )}
+            </Pressable>
           </View>
 
           {/* Quick Info Cards */}
