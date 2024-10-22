@@ -144,22 +144,39 @@ export default function LandmarkScreen() {
       {/* Animated Header */}
       <Animated.View
         style={{ opacity: headerOpacity }}
-        className="absolute top-0 left-0 right-0 z-10"
+        className="absolute top-0 left-0 right-0 z-10 h-[92px]"
       >
         <BlurView
           intensity={100}
-          className="w-full h-16 absolute top-0 left-0"
+          className="w-full h-full absolute top-0 left-0"
         />
-        <View className="flex-row items-center px-4 pt-8 pb-2">
-          <Pressable onPress={() => router.back()} className="p-2">
-            <ArrowLeft color="#fff" size={24} />
-          </Pressable>
-          <Text
-            className="flex-1 text-white text-lg font-semibold ml-4"
-            numberOfLines={1}
-          >
-            {landmark.name}
-          </Text>
+
+        {/* Main container with proper padding and spacing */}
+        <View className="flex-1 flex-row items-center justify-between h-full pt-14 pb-2">
+          {/* Left section */}
+          <View className="flex-[0.2] justify-center">
+            <Pressable
+              onPress={() => router.back()}
+              className="px-4 py-2"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <ArrowLeft color="#fff" size={24} />
+            </Pressable>
+          </View>
+
+          {/* Center section */}
+          <View className="flex-[0.6] items-center justify-center">
+            <Text
+              className="text-white text-lg font-semibold text-center"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
+              {landmark.name}
+            </Text>
+          </View>
+
+          {/* Right section - maintains symmetry */}
+          <View className="flex-[0.2]" />
         </View>
       </Animated.View>
 
@@ -187,6 +204,22 @@ export default function LandmarkScreen() {
           <LinearGradient
             colors={["transparent", "rgba(17, 24, 39, 1)"]}
             className="absolute bottom-0 left-0 right-0 h-40"
+          />
+          {/* // Small linear gradient in the bottom right with the red if the landmark is locked and green if it is unlocked */}
+          <LinearGradient
+            colors={[
+              landmark.isUnlocked ? "#10B981" : "#EF4444",
+              "transparent",
+            ]}
+            start={[1, 1]}
+            end={[0.5, 0.5]}
+            style={{
+              position: "absolute",
+              bottom: -10,
+              right: -10,
+              width: 150,
+              height: 150,
+            }}
           />
         </Animated.View>
 
