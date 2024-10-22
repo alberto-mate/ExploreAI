@@ -1,8 +1,17 @@
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
-import React from "react";
+import {
+  MapPin,
+  ArrowLeft,
+  Lock,
+  Unlock,
+  Navigation,
+  Clock,
+  Share2,
+  ChevronDown,
+} from "lucide-react-native";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +19,13 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  Animated,
+  Platform,
+  StatusBar,
+  Dimensions,
 } from "react-native";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 
 import CustomButton from "@/components/CustomButton";
 import InfoButtons from "@/components/InfoButtons";
@@ -21,12 +36,15 @@ import { calculateDistance } from "@/utils/mapUtils";
 import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
 import UnlockSlider from "@/components/UnlockSlider";
 
+const HERO_HEIGHT = 384; // height-96 in pixels
+
 export default function LandmarkScreen() {
   const { landmark: landmarkId } = useLocalSearchParams();
   const { userLatitude, userLongitude } = useLocationStore();
   const router = useRouter();
   const { user } = useUser();
   const clerkId = user?.id;
+  const [scrollY] = useState(new Animated.Value(0));
 
   const queryClient = useQueryClient();
   const { getUserIsInside } = useLandmarkProximityStore();
@@ -45,7 +63,6 @@ export default function LandmarkScreen() {
     { enabled: !!clerkId },
   );
 
-  // Mutation to update unlock state
   const mutationLandmark = useMutation({
     mutationFn: (newUnlockState: boolean) =>
       fetchAPI("/(api)/landmark", {
@@ -57,7 +74,6 @@ export default function LandmarkScreen() {
         }),
       }),
     onSuccess: () => {
-      // Invalidate the cache so that the new state is fetched after the mutation
       queryClient.invalidateQueries(["landmark", landmarkId, clerkId]);
       queryClient.invalidateQueries([
         "landmarksCity",
@@ -68,20 +84,47 @@ export default function LandmarkScreen() {
     },
   });
 
-  const LoadingContent = () => (
-    <View className="flex-1 justify-center items-center bg-gray-900">
-      <ActivityIndicator size="large" color="white" />
-    </View>
-  );
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
 
-  const ErrorContent = () => (
-    <View className="flex-1 justify-center items-center bg-gray-900">
-      <Text className="text-white">Error fetching landmark</Text>
-    </View>
-  );
+  const imageScale = scrollY.interpolate({
+    inputRange: [-100, 0],
+    outputRange: [1.5, 1],
+    extrapolateLeft: "extend",
+    extrapolateRight: "clamp",
+  });
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-900">
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
+
+  if (error || !landmark) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-900">
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Text className="text-white">Error fetching landmark</Text>
+      </View>
+    );
+  }
 
   const distance =
-    userLatitude && userLongitude && landmark
+    userLatitude && userLongitude
       ? calculateDistance(
           userLatitude,
           userLongitude,
@@ -91,76 +134,174 @@ export default function LandmarkScreen() {
       : "Unknown";
 
   return (
-    <>
+    <View className="flex-1 bg-gray-900">
       <Stack.Screen
         options={{
-          title: landmark?.name || "Loading...",
-          headerShown: true,
-          headerStyle: { backgroundColor: "#1F2937" },
-          headerTintColor: "#fff",
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()}>
-              <ArrowLeft color="#fff" size={24} />
-            </Pressable>
-          ),
+          headerShown: false,
         }}
       />
 
-      {isLoading ? (
-        <LoadingContent />
-      ) : error || !landmark ? (
-        <ErrorContent />
-      ) : (
-        <ScrollView className="flex-1 bg-gray-900">
-          <Image
+      {/* Animated Header */}
+      <Animated.View
+        style={{ opacity: headerOpacity }}
+        className="absolute top-0 left-0 right-0 z-10"
+      >
+        <BlurView
+          intensity={100}
+          className="w-full h-16 absolute top-0 left-0"
+        />
+        <View className="flex-row items-center px-4 pt-8 pb-2">
+          <Pressable onPress={() => router.back()} className="p-2">
+            <ArrowLeft color="#fff" size={24} />
+          </Pressable>
+          <Text
+            className="flex-1 text-white text-lg font-semibold ml-4"
+            numberOfLines={1}
+          >
+            {landmark.name}
+          </Text>
+        </View>
+      </Animated.View>
+
+      <Animated.ScrollView
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+        scrollEventThrottle={16}
+        className="flex-1"
+      >
+        {/* Hero Section */}
+        <Animated.View
+          className="overflow-hidden"
+          style={{
+            height: HERO_HEIGHT,
+            transform: [{ scale: imageScale }],
+          }}
+        >
+          <Animated.Image
             source={{ uri: landmark.image }}
-            className="w-full h-40 object-cover"
+            className="absolute top-0 left-0 right-0 w-full h-full"
+            style={{ transform: [{ scale: 1.1 }] }} // Slight overscale to prevent white edges
           />
-          <View className="p-6">
-            <Text className="text-2xl font-bold text-white mb-2">
-              {landmark.name}
-            </Text>
-            <Text className="text-gray-300 mb-2">
-              Address: {landmark.address}
-            </Text>
-            <Text className="text-gray-300 mb-4">
-              Distance: {distance} km from your location
-            </Text>
+          <LinearGradient
+            colors={["transparent", "rgba(17, 24, 39, 1)"]}
+            className="absolute bottom-0 left-0 right-0 h-40"
+          />
+        </Animated.View>
 
-            {/* Unlock Button */}
-            <CustomButton
-              title={
-                mutationLandmark.isLoading
-                  ? " "
-                  : landmark.isUnlocked
-                    ? "Unlocked"
-                    : "Locked"
-              }
-              IconLeft={
-                mutationLandmark.isLoading ? ActivityIndicator : undefined
-              }
-              bgVariant={landmark.isUnlocked ? "success" : "danger"} // Change color based on state
-              onPress={() => mutationLandmark.mutate(!landmark.isUnlocked)} // Toggle unlock state
-              className="mb-4"
-            />
+        {/* Action Buttons - Outside the scaled container */}
+        <View className="absolute top-0 left-0 right-0 flex-row justify-between px-4 pt-12">
+          <Pressable
+            onPress={() => router.back()}
+            className="p-2 bg-black/30 rounded-full"
+          >
+            <ArrowLeft color="#fff" size={24} />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              /* Add share functionality */
+            }}
+            className="p-2 bg-black/30 rounded-full"
+          >
+            <Share2 color="#fff" size={24} />
+          </Pressable>
+        </View>
 
-            {
-              // Unlock Slider
-              // Only show the unlock slider if the user is inside the landmark and it's still locked
-              isUserInside && !landmark.isUnlocked && (
+        {/* Content Section */}
+        <View className="px-6 -mt-20">
+          {/* Rest of the content remains the same... */}
+          {/* Title and Status */}
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-1">
+              <Text className="text-3xl font-bold text-white mb-2">
+                {landmark.name}
+              </Text>
+              <View className="flex-row items-center">
+                <MapPin color="#9CA3AF" size={16} />
+                <Text className="text-gray-400 ml-1 flex-1">
+                  {landmark.address}
+                </Text>
+              </View>
+            </View>
+            {landmark.isUnlocked ? (
+              <View className="bg-green-500/20 p-2 rounded-full">
+                <Unlock color="#10B981" size={24} />
+              </View>
+            ) : (
+              <View className="bg-red-500/20 p-2 rounded-full">
+                <Lock color="#EF4444" size={24} />
+              </View>
+            )}
+          </View>
+
+          {/* Quick Info Cards */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="flex-row mb-6 -mx-6 px-6"
+          >
+            <View className="bg-gray-800 p-4 rounded-xl mr-4 min-w-[150px]">
+              <Navigation color="#9CA3AF" size={20} />
+              <Text className="text-white text-lg font-bold mt-2">
+                {distance} km
+              </Text>
+              <Text className="text-gray-400 text-sm">from you</Text>
+            </View>
+
+            <View className="bg-gray-800 p-4 rounded-xl mr-4 min-w-[150px]">
+              <Clock color="#9CA3AF" size={20} />
+              <Text className="text-white text-lg font-bold mt-2">
+                {isUserInside ? "You're here!" : "Not visited"}
+              </Text>
+              <Text className="text-gray-400 text-sm">Status</Text>
+            </View>
+          </ScrollView>
+
+          {/* Unlock Section */}
+          {!landmark.isUnlocked && (
+            <View className="bg-gray-800 rounded-xl p-6 mb-6">
+              <Text className="text-white text-lg font-semibold mb-2">
+                Unlock this landmark
+              </Text>
+              <Text className="text-gray-400 mb-4">
+                Visit this location in person to unlock special content and earn
+                achievements
+              </Text>
+              {isUserInside ? (
                 <UnlockSlider
-                  onUnlock={() => {
-                    mutationLandmark.mutate(true);
-                  }}
+                  onUnlock={() => mutationLandmark.mutate(true)}
                   isLoading={mutationLandmark.isLoading}
                 />
-              )
-            }
+              ) : (
+                <CustomButton
+                  title="Get Directions"
+                  IconLeft={Navigation}
+                  bgVariant="primary"
+                  onPress={() => {
+                    /* Add navigation functionality */
+                  }}
+                />
+              )}
+            </View>
+          )}
 
-            {landmark.isUnlocked && <InfoButtons name={landmark.name} />}
-          </View>
-        </ScrollView>
-      )}
-    </>
+          {/* Additional Content */}
+          {landmark.isUnlocked && (
+            <View className="mb-6">
+              <Text className="text-white text-xl font-semibold mb-4">
+                Additional Information
+              </Text>
+              <InfoButtons name={landmark.name} />
+            </View>
+          )}
+        </View>
+
+        {/* Bounce Indicator */}
+        <View className="items-center pb-6 pt-2">
+          <ChevronDown color="#9CA3AF" size={24} />
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 }
