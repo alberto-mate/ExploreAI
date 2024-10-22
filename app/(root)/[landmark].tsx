@@ -152,6 +152,7 @@ export default function LandmarkScreen() {
                   onUnlock={() => {
                     mutationLandmark.mutate(true);
                   }}
+                  isLoading={mutationLandmark.isLoading}
                 />
               )
             }

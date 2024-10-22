@@ -1,33 +1,18 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import {
+  ActivityIndicator,
   Animated,
   LayoutChangeEvent,
   PanResponder,
-  StyleSheet,
   Text,
-  View,
-  ViewStyle,
 } from "react-native";
-import ChevronLeft from "@/assets/svg/chevron-left.svg";
+import ChevronRight from "@/assets/svg/chevron-right.svg";
 
-interface ChevronProps {
-  animated: Animated.Value;
-  inputRange: number[];
-  outputRange: string[];
-}
+interface ChevronProps {}
 
-const Chevron: React.FC<ChevronProps> = ({
-  animated,
-  inputRange,
-  outputRange,
-}) => {
-  const chevronColor = animated.interpolate({
-    inputRange,
-    outputRange,
-  });
-
+const Chevron: React.FC<ChevronProps> = ({}) => {
   return (
-    <ChevronLeft
+    <ChevronRight
       width={30}
       height={30}
       marginLeft={-5}
@@ -39,15 +24,15 @@ const Chevron: React.FC<ChevronProps> = ({
 
 interface UnlockSliderProps {
   onUnlock: () => void;
+  isLoading: boolean;
 }
 
 const SLIDER_WIDTH = 90;
 const SLIDER_MARGIN = 10;
 
-const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
+const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock, isLoading }) => {
   const distance = useRef(0);
   const translationX = useRef(new Animated.Value(0)).current;
-  const chevronColorAnim = useRef(new Animated.Value(0)).current;
   const backgroundColor = useRef(new Animated.Value(0)).current;
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
@@ -55,20 +40,14 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
     distance.current = layoutWidth - SLIDER_WIDTH - SLIDER_MARGIN * 2;
   }, []);
 
-  const shimmer = useCallback(() => {
-    Animated.timing(chevronColorAnim, {
-      toValue: 1,
-      duration: 2000,
-      useNativeDriver: false,
-    }).start(() => {
-      chevronColorAnim.setValue(0);
-      shimmer();
-    });
-  }, [chevronColorAnim]);
+  // Prevent chevron aperture after loading and before dissapearing the main component
+  const hasStartedLoading = useRef(false); // Track loading state
 
   useEffect(() => {
-    shimmer();
-  }, [shimmer]);
+    if (isLoading) {
+      hasStartedLoading.current = true; // Set to true when loading starts
+    }
+  }, [isLoading]);
 
   const release = useCallback(() => {
     Animated.spring(translationX, {
@@ -85,19 +64,19 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (_, gestureState) => {
-        if (gestureState.dx > 0) {
+        if (gestureState.dx < 0) {
           translationX.setValue(0);
           backgroundColor.setValue(0);
-        } else if (gestureState.dx < -distance.current) {
-          translationX.setValue(-distance.current);
+        } else if (gestureState.dx > distance.current) {
+          translationX.setValue(distance.current);
           backgroundColor.setValue(1);
         } else {
           translationX.setValue(gestureState.dx);
-          backgroundColor.setValue(gestureState.dx / -distance.current);
+          backgroundColor.setValue(gestureState.dx / distance.current);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx < -distance.current) {
+        if (gestureState.dx > distance.current) {
           onUnlock();
         } else {
           release();
@@ -117,32 +96,28 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock }) => {
       style={{ backgroundColor: interpolateBackgroundColor }}
       onLayout={onLayout}
     >
-      <Text className="text-white text-left ml-8 text-lg">Slide to unlock</Text>
       <Animated.View
         style={{
           transform: [{ translateX: translationX }],
-          marginRight: SLIDER_MARGIN,
+          marginLeft: SLIDER_MARGIN,
           width: SLIDER_WIDTH,
         }}
         {...panResponder.panHandlers}
         className={`bg-white h-[70%] rounded-full flex flex-row items-center justify-center`}
       >
-        <Chevron
-          animated={chevronColorAnim}
-          inputRange={[0, 0.8, 1]}
-          outputRange={["#000000", "#6a1dd9", "#000000"]}
-        />
-        <Chevron
-          animated={chevronColorAnim}
-          inputRange={[0, 0.6, 1.0]}
-          outputRange={["#000000", "#6a1dd9", "#000000"]}
-        />
-        <Chevron
-          animated={chevronColorAnim}
-          inputRange={[0, 0.4, 1]}
-          outputRange={["#000000", "#6a1dd9", "#000000"]}
-        />
+        {hasStartedLoading.current ? ( // Use ref to control visibility
+          <ActivityIndicator size="small" color="#6a1dd9" />
+        ) : (
+          <>
+            <Chevron />
+            <Chevron />
+            <Chevron />
+          </>
+        )}
       </Animated.View>
+      <Text className="text-white text-left mr-8 text-lg -z-10">
+        Slide to unlock
+      </Text>
     </Animated.View>
   );
 };
