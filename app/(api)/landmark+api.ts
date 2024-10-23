@@ -21,23 +21,33 @@ export async function GET(request: Request) {
       );
     }
 
-    // Fetch the specific landmark with unlocked status based on the user
+    console.log("Landmark ID:", landmarkId); // Log the landmark ID to check the output
+    console.log("Clerk ID:", clerkId); // Log the clerk ID to check the output
+
+    // Fixed query with proper table references
     const response = await sql`
       SELECT 
-        l.id, 
-        l.city_id AS "cityId", 
-        l.name, 
-        l.latitude, 
-        l.longitude, 
-        l.address, 
-        l.image, 
-        COALESCE(ul.is_unlocked, FALSE) AS "isUnlocked"
-      FROM landmarks l
-      LEFT JOIN userLandmarks ul 
-        ON l.id = ul.landmark_id 
-        AND ul.clerk_id = ${clerkId}
-      WHERE l.id = ${landmarkId};
+        landmarks.id, 
+        landmarks.city_id AS "cityId", 
+        landmarks.name, 
+        landmarks.latitude, 
+        landmarks.longitude, 
+        landmarks.address, 
+        landmarks.image, 
+        COALESCE(userLandmarks.is_unlocked, FALSE) AS "isUnlocked",
+        CASE 
+          WHEN userLandmarks.unlocked_date IS NOT NULL 
+          THEN TO_CHAR(userLandmarks.unlocked_date, 'DD Mon. YYYY')
+          ELSE NULL 
+        END AS "unlockedDate"
+      FROM landmarks
+      LEFT JOIN userLandmarks 
+        ON landmarks.id = userLandmarks.landmark_id 
+        AND userLandmarks.clerk_id = ${clerkId}
+      WHERE landmarks.id = ${landmarkId};
     `;
+
+    console.log("API Response:", response); // Log the API response to check the output
 
     if (response.length === 0) {
       return Response.json({ error: "Landmark not found" }, { status: 404 });
@@ -51,7 +61,6 @@ export async function GET(request: Request) {
   }
 }
 
-// Update the unlock state of a landmark for a user
 export async function POST(request: Request) {
   try {
     const sql = neon(`${process.env.DATABASE_URL}`);
@@ -66,11 +75,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get the current date in DD/MM/YYYY format
+    const currentDate = new Date();
+    // 1999-01-08	ISO 8601; January 8 in any mode (recommended format)
+    const unlockedDate = currentDate.toISOString().split("T")[0];
+    console.log("Unlocked date:", unlockedDate);
+
     const response = await sql`
-      INSERT INTO userLandmarks (landmark_id, clerk_id, is_unlocked)
-      VALUES (${landmarkId}, ${clerkId}, ${isUnlocked})
+      INSERT INTO userLandmarks (landmark_id, clerk_id, is_unlocked, unlocked_date)
+      VALUES (${landmarkId}, ${clerkId}, ${isUnlocked}, ${unlockedDate})
       ON CONFLICT (landmark_id, clerk_id)
-      DO UPDATE SET is_unlocked = EXCLUDED.is_unlocked;
+      DO UPDATE SET is_unlocked = EXCLUDED.is_unlocked, unlocked_date = EXCLUDED.unlocked_date;
     `;
 
     return new Response(JSON.stringify({ data: response[0] }), {

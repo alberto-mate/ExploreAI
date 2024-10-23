@@ -291,9 +291,17 @@ export default function LandmarkScreen() {
             <View className="bg-gray-800 p-4 rounded-xl mr-4 min-w-[150px]">
               <Clock color="#9CA3AF" size={20} />
               <Text className="text-white text-lg font-bold mt-2">
-                {isUserInside ? "You're here!" : "Not visited"}
+                {isUserInside
+                  ? "You're here!"
+                  : landmark.isUnlocked
+                    ? landmark.unlockedDate
+                    : "Not visited"}
               </Text>
-              <Text className="text-gray-400 text-sm">Status</Text>
+              <Text className="text-gray-400 text-sm">
+                {!isUserInside && landmark.isUnlocked
+                  ? "Unlocked on"
+                  : "Status"}
+              </Text>
             </View>
           </ScrollView>
 

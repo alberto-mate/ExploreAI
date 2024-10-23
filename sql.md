@@ -38,6 +38,9 @@ CREATE TABLE userLandmarks (
 
 ALTER TABLE userLandmarks
 ADD CONSTRAINT userLandmarks_unique UNIQUE (landmark_id, clerk_id);
+
+ALTER TABLE userLandmarks
+ADD COLUMN unlocked_date DATE;
 ```
 
 ## Insert data

@@ -13,6 +13,7 @@ export interface LandmarkProps {
   isUnlocked: boolean;
   address: string;
   image: string;
+  unlockedDate?: string | null; // Optional, since the landmark may not be unlocked
 }
 
 export interface CityProps {
