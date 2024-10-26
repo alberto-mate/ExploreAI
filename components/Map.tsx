@@ -60,12 +60,12 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
               radius={radiusUnlocked}
               strokeColor={
                 getUserIsInside(landmark.id)
-                  ? "rgb(124, 58, 237, 0.5)"
+                  ? "rgba(124, 58, 237, 0.5)"
                   : "rgba(255, 255, 0, 0.5)"
               } // Purple with 50% opacity
               fillColor={
                 getUserIsInside(landmark.id)
-                  ? "rgb(124, 58, 237, 0.1)"
+                  ? "rgba(124, 58, 237, 0.1)"
                   : "rgba(255, 255, 0, 0.1)"
               } // Purple with 10% opacity
               strokeWidth={4}
