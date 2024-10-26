@@ -9,10 +9,17 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { LandmarkProps } from "../types";
 import { useLandmarkProximityStore } from "@/store/landmarkProximityStore";
-import { LinearGradient } from "expo-linear-gradient";
+import { calculateDistance } from "@/utils/mapUtils";
+import { useLocationStore } from "@/store/locationStore";
+
+// Add distance to the LandmarkProps type
+interface LandmarkWithDistance extends LandmarkProps {
+  distance: number;
+}
 
 export default function LandmarkList({
   landmarks,
@@ -20,15 +27,40 @@ export default function LandmarkList({
   landmarks: LandmarkProps[];
 }) {
   const router = useRouter();
-
   const { getUserIsInside, getListLandmarksInsideLocked } =
     useLandmarkProximityStore();
 
-  const landmarksInsideLocked = getListLandmarksInsideLocked();
+  // Get the user's location from the store
+  const { userLatitude, userLongitude } = useLocationStore();
+  if (!userLatitude || !userLongitude) return null;
 
-  const renderItem = ({ item: landmark }: { item: LandmarkProps }) => {
+  // Add distances to landmarks and sort them
+  const landmarksWithDistance: LandmarkWithDistance[] = landmarks
+    .map((landmark) => ({
+      ...landmark,
+      distance: calculateDistance(
+        userLatitude,
+        userLongitude,
+        landmark.latitude,
+        landmark.longitude,
+      ),
+    }))
+    .sort((a, b) => a.distance - b.distance);
+
+  const landmarksInsideLocked = getListLandmarksInsideLocked()
+    .map((landmark) => ({
+      ...landmark,
+      distance: calculateDistance(
+        userLatitude,
+        userLongitude,
+        landmark.latitude,
+        landmark.longitude,
+      ),
+    }))
+    .sort((a, b) => a.distance - b.distance);
+
+  const renderItem = ({ item: landmark }: { item: LandmarkWithDistance }) => {
     const isUserInside = getUserIsInside(landmark.id);
-
     const backgroundColor = isUserInside
       ? "bg-violet-600/20"
       : landmark.isUnlocked
@@ -37,11 +69,19 @@ export default function LandmarkList({
 
     return (
       <Pressable
-        className={`p-4 rounded-md ${backgroundColor}`}
+        className={`px-4 py-3 rounded-md ${backgroundColor}`}
         onPress={() => router.push(`/${landmark.id}`)}
       >
         <View className="flex-row justify-between items-center">
-          <Text className="font-medium text-white">{landmark.name}</Text>
+          <View>
+            <Text className="font-medium text-white">{landmark.name}</Text>
+            <View className="flex-row items-center mt-1">
+              <MapPin color="#9ca3af" size={16} />
+              <Text className="text-gray-400 text-sm ml-1">
+                {landmark.distance.toFixed(1)} km away
+              </Text>
+            </View>
+          </View>
           {landmark.isUnlocked ? (
             <Award color="#22c55e" size={20} />
           ) : (
@@ -52,7 +92,11 @@ export default function LandmarkList({
     );
   };
 
-  const renderInsideLocked = ({ item: landmark }: { item: LandmarkProps }) => {
+  const renderInsideLocked = ({
+    item: landmark,
+  }: {
+    item: LandmarkWithDistance;
+  }) => {
     return (
       <Pressable
         className="rounded-md overflow-hidden shadow-lg active:opacity-80"
@@ -70,11 +114,8 @@ export default function LandmarkList({
             className="absolute w-full h-[100%] bottom-0 overflow-hidden rounded-b-md"
           />
           <View className="absolute bottom-0 left-0 right-0 p-3">
-            <Text className="text-white text-base mb-1 ">
-              Unlock it now! 🎉
-            </Text>
-
-            <Text className="text-white text-xl font-bold mb-1 ">
+            <Text className="text-white text-base mb-1">Unlock it now! 🎉</Text>
+            <Text className="text-white text-xl font-bold mb-1">
               {landmark.name}
             </Text>
           </View>
@@ -103,11 +144,11 @@ export default function LandmarkList({
       <Text className="text-xl font-semibold mb-4 text-gray-300">
         Nearby Landmarks
       </Text>
-      {landmarks.length === 0 ? (
+      {landmarksWithDistance.length === 0 ? (
         <Text className="text-gray-500 text-lg">No landmarks found</Text>
       ) : (
         <FlatList
-          data={landmarks}
+          data={landmarksWithDistance}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className="h-3" />}
