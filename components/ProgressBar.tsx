@@ -60,9 +60,9 @@ export default function ProgressBar({ progress }: ProgressBarProps) {
           }}
         >
           <LinearGradient
-            colors={["#3b82f6", "#3b5998", "#ff00ea"]}
+            colors={["#3b82f6", "#7c3aed"]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+            end={{ x: 0.8, y: 0 }}
             style={{ width: "100%", height: "100%", justifyContent: "center" }}
           />
         </Animated.View>

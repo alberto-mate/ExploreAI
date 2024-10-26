@@ -47,8 +47,6 @@ export async function GET(request: Request) {
       WHERE landmarks.id = ${landmarkId};
     `;
 
-    console.log("API Response:", response); // Log the API response to check the output
-
     if (response.length === 0) {
       return Response.json({ error: "Landmark not found" }, { status: 404 });
     }
@@ -79,7 +77,6 @@ export async function POST(request: Request) {
     const currentDate = new Date();
     // 1999-01-08	ISO 8601; January 8 in any mode (recommended format)
     const unlockedDate = currentDate.toISOString().split("T")[0];
-    console.log("Unlocked date:", unlockedDate);
 
     const response = await sql`
       INSERT INTO userLandmarks (landmark_id, clerk_id, is_unlocked, unlocked_date)

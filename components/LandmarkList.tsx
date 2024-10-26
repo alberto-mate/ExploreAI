@@ -30,7 +30,7 @@ export default function LandmarkList({
     const isUserInside = getUserIsInside(landmark.id);
 
     const backgroundColor = isUserInside
-      ? "bg-purple-500/20"
+      ? "bg-violet-600/20"
       : landmark.isUnlocked
         ? "bg-green-500/20"
         : "bg-gray-500/20";
@@ -65,7 +65,7 @@ export default function LandmarkList({
             resizeMode="cover"
           />
           <LinearGradient
-            colors={["transparent", "#6a1dd9"]}
+            colors={["transparent", "#7c3aed"]}
             locations={[0, 0.8]}
             className="absolute w-full h-[100%] bottom-0 overflow-hidden rounded-b-md"
           />

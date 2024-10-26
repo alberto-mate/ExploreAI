@@ -87,12 +87,12 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock, isLoading }) => {
 
   const interpolateBackgroundColor = backgroundColor.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#000", "#6a1dd9"],
+    outputRange: ["#111827", "#7c3aed"],
   });
 
   return (
     <Animated.View
-      className="w-full h-[88px] rounded-full justify-between flex-row items-center border-[1px] border-gray-300/50"
+      className="w-full h-[75px] rounded-full justify-between flex-row items-center border-[1px] border-gray-300/50"
       style={{ backgroundColor: interpolateBackgroundColor }}
       onLayout={onLayout}
     >
@@ -106,7 +106,7 @@ const UnlockSlider: React.FC<UnlockSliderProps> = ({ onUnlock, isLoading }) => {
         className={`bg-white h-[70%] rounded-full flex flex-row items-center justify-center`}
       >
         {hasStartedLoading.current ? ( // Use ref to control visibility
-          <ActivityIndicator size="small" color="#6a1dd9" />
+          <ActivityIndicator size="small" color="#7c3aed" />
         ) : (
           <>
             <Chevron />

@@ -146,7 +146,7 @@ const SignUp = () => {
           <OAuth />
           <Link href="/sign-in" className="text-center text-general-200 mt-8">
             <Text className="text-white">Already have an account? </Text>
-            <Text className="text-blue-500">Log In</Text>
+            <Text className="text-violet-600">Log In</Text>
           </Link>
         </View>
         <ReactNativeModal

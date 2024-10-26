@@ -46,7 +46,7 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
                   landmark.isUnlocked
                     ? "#22c55e"
                     : getUserIsInside(landmark.id)
-                      ? "#8b5cf6"
+                      ? "#7c3aed"
                       : "#9ca3af"
                 }
                 size={30}
@@ -60,12 +60,12 @@ export default function Map({ landmarks }: { landmarks: LandmarkProps[] }) {
               radius={radiusUnlocked}
               strokeColor={
                 getUserIsInside(landmark.id)
-                  ? "rgba(139, 92, 246, 0.5)"
+                  ? "rgb(124, 58, 237, 0.5)"
                   : "rgba(255, 255, 0, 0.5)"
               } // Purple with 50% opacity
               fillColor={
                 getUserIsInside(landmark.id)
-                  ? "rgba(139, 92, 246, 0.1)"
+                  ? "rgb(124, 58, 237, 0.1)"
                   : "rgba(255, 255, 0, 0.1)"
               } // Purple with 10% opacity
               strokeWidth={4}

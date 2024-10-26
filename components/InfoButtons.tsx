@@ -54,7 +54,7 @@ const InfoButtons = ({ name }: { name: string }) => {
               onPress={() => handlePress(info.title)}
               className={`flex-1 py-3 px-2 rounded-xl items-center justify-center ${
                 isActive
-                  ? "bg-blue-600 shadow-lg shadow-blue-600/50"
+                  ? "bg-violet-600 shadow-lg shadow-violet-600/50"
                   : "bg-gray-800"
               }`}
             >
@@ -84,7 +84,7 @@ const InfoButtons = ({ name }: { name: string }) => {
             <Text className="text-white text-base mb-4 leading-6">{text}</Text>
           )}
 
-          <Pressable className="flex-row items-center justify-center bg-blue-600 py-3 rounded-lg">
+          <Pressable className="flex-row items-center justify-center bg-violet-600 py-3 rounded-lg">
             <Volume2 size={20} color="#ffffff" className="mr-2" />
             <Text className="text-white font-medium">Listen</Text>
           </Pressable>

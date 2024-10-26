@@ -95,7 +95,7 @@ const SignIn = () => {
 
           <Link href="/sign-up" className="text-center text-general-200 mt-8">
             <Text className="text-white">Don't have an account?</Text>
-            <Text className="text-blue-500"> Sign Up</Text>
+            <Text className="text-violet-600"> Sign Up</Text>
           </Link>
         </View>
       </View>
