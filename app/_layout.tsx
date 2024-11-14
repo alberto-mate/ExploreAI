@@ -11,6 +11,17 @@ import { useLocationStore } from "@/store/locationStore";
 import { tokenCache } from "@/utils/auth";
 import { ignoreWarnings } from "@/utils/ignoreWarnings";
 
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
+
+// This is the default configuration
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
+});
+
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
