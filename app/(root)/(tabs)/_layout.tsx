@@ -10,7 +10,7 @@ const TabIcon = ({
   focused: boolean;
 }) => (
   <View
-    className={`rounded-full w-12 h-12 items-center justify-center ${
+    className={`rounded-full w-10 h-10 items-center justify-center ${
       focused ? "bg-gray-500" : ""
     }`}
   >
@@ -35,13 +35,14 @@ export default function TabsLayout() {
           },
           shadowOpacity: 0.8,
           shadowRadius: 30.0,
-          elevation: 24,
+          elevation: 14,
           borderTopLeftRadius: 21,
           borderTopRightRadius: 21,
           position: "absolute",
           bottom: 0,
           padding: 10,
           width: "100%",
+          paddingTop: 10,
           height: 84,
           zIndex: 0,
           borderTopWidth: 0,
