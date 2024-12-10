@@ -6,7 +6,7 @@
 
 Have you ever arrived in a city and wondered what to see? ExploreAI is a mobile application that transforms city exploration into an interactive experience. Using real-time location data and AI-powered descriptions, users can discover and unlock landmarks as they physically explore cities.
 
-I started working on this app as a personal project where I wanted to learn more about app development in particular React Native for its cross-platform capabilities. This is the output of my learning. The app is not available on any store yet, although I would like to release it in the future.
+I started working on this app as a personal project where I wanted to learn more about app development in particular React Native for its cross-platform capabilities. I found that the idea of having an AI guide you through a city was a fun and interesting idea. For a better and more reliable AI output, I used prompt engineering and in-context learning retrieving the information from the Wikipedia API. For future improvements, I would like that the landmarks are generated leveraging a LLM and user's preferences so each user can have a personalized tour around the city. The app is not available on any store yet, although I would like to release it in the future.
 
 ## ✨ Key Features
 
