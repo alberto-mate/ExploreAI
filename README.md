@@ -1,4 +1,4 @@
-# ExploreAI 🌍
+# ExploreAI
 
 <p align="center">
   <img width="100%" src="docs/explore-5.png">
@@ -18,7 +18,7 @@ I started working on this app as a personal project where I wanted to learn more
 - **Modern UI/UX**: Intuitive design with animations and smooth transitions
 
 <p align="center">
-  <img width="100%" src="docs/explore-3.png">
+  <img width="100%" src="docs/video.gif">
 </p>
 
 ## 🛠 Tech Stack
@@ -72,3 +72,9 @@ npx expo start -c
 ```
 
 2. Scan the QR code with the Expo app on your phone
+
+## Screens
+
+<p align="center">
+  <img width="100%" src="docs/explore-3.png">
+</p>
